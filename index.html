@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Real Estate VR | Professional 3D Property Tours</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* Professional Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-logo {
+            font-size: 64px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .loading-title {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .loading-subtitle {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .progress-bar-container {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #888;
+            font-weight: 300;
+        }
+
+        /* UI Overlay */
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .ui-overlay > * {
+            pointer-events: all;
+        }
+
+        /* Premium Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 50px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 40px;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .property-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Room Navigation */
+        .room-navigation {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(30px);
+            padding: 25px 40px;
+            border-radius: 100px;
+            display: flex;
+            gap: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
+            animation: slideUp 0.8s ease 0.3s both;
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .room-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            color: white;
+            padding: 18px 30px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 120px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .room-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .room-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+            transform: translateY(-5px);
+        }
+
+        .room-icon {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .room-name {
+            font-size: 13px;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        /* Property Info Panel */
+        .info-panel {
+            position: absolute;
+            top: 120px;
+            right: 50px;
+            width: 420px;
+            max-height: calc(100vh - 200px);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 25px;
+            padding: 35px;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
+            animation: slideInRight 0.8s ease 0.5s both;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(500px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .info-header {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .info-location {
+            font-size: 15px;
+            color: #aaa;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-price {
+            font-size: 42px;
+            font-weight: 900;
+            color: #4ECDC4;
+            text-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .info-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list {
+            list-style: none;
+        }
+
+        .features-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+            color: #ddd;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .features-list li:hover {
+            padding-left: 10px;
+            color: #fff;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            color: #4ECDC4;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .action-btn-primary {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .action-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(78, 205, 196, 0.6);
+        }
+
+        .action-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Controls Guide */
+        .controls-guide {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(30px);
+            padding: 25px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
+            animation: slideInLeft 0.8s ease 0.7s both;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-500px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .controls-guide h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .control-item {
+            font-size: 13px;
+            color: #ddd;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-icon {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        /* Scrollbar Styling */
+        .info-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .info-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .info-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        .info-panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .header {
+                padding: 20px 30px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+            }
+
+            .room-navigation {
+                bottom: 30px;
+                padding: 20px 30px;
+                gap: 15px;
+            }
+
+            .room-btn {
+                min-width: 100px;
+                padding: 15px 20px;
+            }
+
+            .info-panel {
+                right: 30px;
+                width: 360px;
+            }
+
+            .controls-guide {
+                bottom: 30px;
+                left: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .property-title {
+                font-size: 16px;
+            }
+
+            .room-navigation {
+                bottom: 20px;
+                padding: 15px 20px;
+                gap: 10px;
+                max-width: 90%;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .room-btn {
+                min-width: 80px;
+                padding: 12px 15px;
+            }
+
+            .room-icon {
+                font-size: 24px;
+            }
+
+            .room-name {
+                font-size: 11px;
+            }
+
+            .info-panel {
+                right: 20px;
+                width: calc(100% - 40px);
+                max-width: 340px;
+                top: 100px;
+            }
+
+            .controls-guide {
+                display: none;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="loading-content">
+            <div class="loading-logo">🏢</div>
+            <div class="loading-title">LUXURY ESTATES</div>
+            <div class="loading-subtitle">Loading Premium Property Experience</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="loading-text" id="loading-text">Initializing 3D Environment...</div>
+        </div>
+    </div>
+
+    <!-- 3D Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">🏢</div>
+                <div class="logo-text">LUXURY ESTATES</div>
+            </div>
+            <div class="property-title">Skyline Penthouse - Manhattan</div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="toggleFullscreen()">
+                    <span>⛶</span> Fullscreen
+                </button>
+                <button class="btn btn-primary" onclick="enterVRMode()">
+                    <span>🥽</span> VR Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Room Navigation -->
+        <div class="room-navigation">
+            <button class="room-btn active" data-room="living" onclick="changeRoom('living')">
+                <div class="room-icon">🛋️</div>
+                <div class="room-name">Living Room</div>
+            </button>
+            <button class="room-btn" data-room="kitchen" onclick="changeRoom('kitchen')">
+                <div class="room-icon">🍳</div>
+                <div class="room-name">Kitchen</div>
+            </button>
+            <button class="room-btn" data-room="bedroom" onclick="changeRoom('bedroom')">
+                <div class="room-icon">🛏️</div>
+                <div class="room-name">Bedroom</div>
+            </button>
+            <button class="room-btn" data-room="bathroom" onclick="changeRoom('bathroom')">
+                <div class="room-icon">🛁</div>
+                <div class="room-name">Bathroom</div>
+            </button>
+            <button class="room-btn" data-room="terrace" onclick="changeRoom('terrace')">
+                <div class="room-icon">🌆</div>
+                <div class="room-name">Terrace</div>
+            </button>
+        </div>
+
+        <!-- Property Info Panel -->
+        <div class="info-panel">
+            <div class="info-header">
+                <h2>Skyline Penthouse</h2>
+                <div class="info-location">
+                    <span>📍</span>
+                    <span>432 Park Avenue, Manhattan, NY 10022</span>
+                </div>
+                <div class="info-price">$4,850,000</div>
+            </div>
+
+            <div class="info-stats">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Bedrooms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3.5</div>
+                    <div class="stat-label">Bathrooms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3,200</div>
+                    <div class="stat-label">Sq Ft</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">42nd</div>
+                    <div class="stat-label">Floor</div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3><span>✨</span> Premium Features</h3>
+                <ul class="features-list">
+                    <li>Floor-to-ceiling windows with panoramic city views</li>
+                    <li>Smart home automation system</li>
+                    <li>Private elevator access</li>
+                    <li>1,200 sq ft rooftop terrace</li>
+                    <li>Italian marble bathrooms</li>
+                    <li>Gourmet chef's kitchen</li>
+                    <li>24/7 concierge service</li>
+                    <li>State-of-the-art fitness center</li>
+                    <li>Wine cellar and storage</li>
+                    <li>Pet-friendly building</li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3><span>🏗️</span> Building Details</h3>
+                <ul class="features-list">
+                    <li>Year Built: 2024</li>
+                    <li>Total Floors: 96</li>
+                    <li>Units: 104 exclusive residences</li>
+                    <li>Architect: Rafael Viñoly</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn action-btn-primary" onclick="scheduleTour()">
+                    📞 Schedule Tour
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="saveProperty()">
+                    💾 Save Property
+                </button>
+            </div>
+        </div>
+
+        <!-- Controls Guide -->
+        <div class="controls-guide">
+            <h4>Controls</h4>
+            <div class="control-item">
+                <span class="control-icon">🖱️</span>
+                <span>Drag to rotate view</span>
+            </div>
+            <div class="control-item">
+                <span class="control-icon">🔍</span>
+                <span>Scroll to zoom in/out</span>
+            </div>
+            <div class="control-item">
+                <span class="control-icon">👆</span>
+                <span>Click rooms to navigate</span>
+            </div>
+            <div class="control-item">
+                <span class="control-icon">⌨️</span>
+                <span>Arrow keys to move</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js from CDN -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+        scene.fog = new THREE.Fog(0x1a1a2e, 10, 50);
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        camera.position.set(0, 1.6, 8);
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 3;
+        controls.maxDistance = 20;
+        controls.maxPolarAngle = Math.PI / 2;
+        controls.target.set(0, 1, 0);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 5);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 50;
+        scene.add(directionalLight);
+
+        const pointLight1 = new THREE.PointLight(0xffd700, 0.8, 10);
+        pointLight1.position.set(-3, 2.5, -3);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0xffd700, 0.8, 10);
+        pointLight2.position.set(3, 2.5, -3);
+        scene.add(pointLight2);
+
+        // Create room
+        function createRoom() {
+            const roomGroup = new THREE.Group();
+
+            // Floor
+            const floorGeometry = new THREE.PlaneGeometry(15, 12);
+            const floorMaterial = new THREE.MeshStandardMaterial({
+                color: 0xf5f5f5,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            roomGroup.add(floor);
+
+            // Walls
+            const wallMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+
+            // Back wall
+            const backWall = new THREE.Mesh(
+                new THREE.BoxGeometry(15, 4, 0.2),
+                wallMaterial
+            );
+            backWall.position.set(0, 2, -6);
+            backWall.receiveShadow = true;
+            roomGroup.add(backWall);
+
+            // Left wall
+            const leftWall = new THREE.Mesh(
+                new THREE.BoxGeometry(0.2, 4, 12),
+                wallMaterial
+            );
+            leftWall.position.set(-7.5, 2, 0);
+            leftWall.receiveShadow = true;
+            roomGroup.add(leftWall);
+
+            // Right wall
+            const rightWall = new THREE.Mesh(
+                new THREE.BoxGeometry(0.2, 4, 12),
+                wallMaterial
+            );
+            rightWall.position.set(7.5, 2, 0);
+            rightWall.receiveShadow = true;
+            roomGroup.add(rightWall);
+
+            // Window
+            const windowGeometry = new THREE.PlaneGeometry(6, 2.5);
+            const windowMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x87CEEB,
+                transparent: true,
+                opacity: 0.3,
+                roughness: 0.1,
+                metalness: 0.9,
+                transmission: 0.5,
+                thickness: 0.5
+            });
+            const window1 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window1.position.set(0, 2.5, -5.9);
+            roomGroup.add(window1);
+
+            return roomGroup;
+        }
+
+        // Create furniture
+        function createSofa(x, z) {
+            const sofaGroup = new THREE.Group();
+            const sofaMaterial = new THREE.MeshStandardMaterial({
+                color: 0x4169E1,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+
+            // Seat
+            const seat = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 0.6, 1),
+                sofaMaterial
+            );
+            seat.position.y = 0.3;
+            seat.castShadow = true;
+            sofaGroup.add(seat);
+
+            // Backrest
+            const backrest = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 0.8, 0.3),
+                sofaMaterial
+            );
+            backrest.position.set(0, 0.7, -0.35);
+            backrest.castShadow = true;
+            sofaGroup.add(backrest);
+
+            // Armrests
+            const armrest1 = new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, 0.8, 1),
+                sofaMaterial
+            );
+            armrest1.position.set(-1.1, 0.7, 0);
+            armrest1.castShadow = true;
+            sofaGroup.add(armrest1);
+
+            const armrest2 = armrest1.clone();
+            armrest2.position.set(1.1, 0.7, 0);
+            sofaGroup.add(armrest2);
+
+            sofaGroup.position.set(x, 0, z);
+            return sofaGroup;
+        }
+
+        function createTable(x, z) {
+            const tableGroup = new THREE.Group();
+            
+            // Tabletop
+            const topMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8B4513,
+                roughness: 0.3,
+                metalness: 0.5
+            });
+            const top = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 0.1, 1.2),
+                topMaterial
+            );
+            top.position.y = 0.6;
+            top.castShadow = true;
+            tableGroup.add(top);
+
+            // Legs
+            const legMaterial = new THREE.MeshStandardMaterial({
+                color: 0x654321,
+                roughness: 0.5,
+                metalness: 0.3
+            });
+            const legGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.6);
+            
+            const positions = [
+                [-0.8, 0.3, -0.5],
+                [0.8, 0.3, -0.5],
+                [-0.8, 0.3, 0.5],
+                [0.8, 0.3, 0.5]
+            ];
+
+            positions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.set(...pos);
+                leg.castShadow = true;
+                tableGroup.add(leg);
+            });
+
+            tableGroup.position.set(x, 0, z);
+            return tableGroup;
+        }
+
+        function createLamp(x, z) {
+            const lampGroup = new THREE.Group();
+
+            // Stand
+            const stand = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.03, 0.03, 1.8),
+                new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.8 })
+            );
+            stand.position.y = 0.9;
+            stand.castShadow = true;
+            lampGroup.add(stand);
+
+            // Bulb
+            const bulb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.25),
+                new THREE.MeshStandardMaterial({
+                    color: 0xFFD700,
+                    emissive: 0xFFD700,
+                    emissiveIntensity: 2
+                })
+            );
+            bulb.position.y = 1.9;
+            lampGroup.add(bulb);
+
+            // Light
+            const light = new THREE.PointLight(0xFFD700, 1, 8);
+            light.position.y = 1.9;
+            light.castShadow = true;
+            lampGroup.add(light);
+
+            lampGroup.position.set(x, 0, z);
+            return lampGroup;
+        }
+
+        // Add room and furniture
+        const room = createRoom();
+        scene.add(room);
+
+        const sofa = createSofa(0, -4);
+        scene.add(sofa);
+
+        const table = createTable(0, -1);
+        scene.add(table);
+
+        const lamp1 = createLamp(-4, -4);
+        scene.add(lamp1);
+
+        const lamp2 = createLamp(4, -4);
+        scene.add(lamp2);
+
+        // Add decorative painting
+        const paintingGeometry = new THREE.PlaneGeometry(1.5, 2);
+        const paintingMaterial = new THREE.MeshStandardMaterial({
+            color: 0x8B4513,
+            roughness: 0.5
+        });
+        const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
+        painting.position.set(-7.4, 2, 0);
+        painting.rotation.y = Math.PI / 2;
+        scene.add(painting);
+
+        // Loading progress
+        let loadProgress = 0;
+        const loadingInterval = setInterval(() => {
+            loadProgress += Math.random() * 15;
+            if (loadProgress >= 100) {
+                loadProgress = 100;
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    document.getElementById('loading').classList.add('hidden');
+                }, 500);
+            }
+            document.getElementById('progress-bar').style.width = loadProgress + '%';
+            document.getElementById('loading-text').textContent = 
+                loadProgress < 30 ? 'Loading 3D models...' :
+                loadProgress < 60 ? 'Applying materials...' :
+                loadProgress < 90 ? 'Setting up lighting...' :
+                'Almost ready...';
+        }, 200);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Room navigation
+        window.changeRoom = function(roomId) {
+            document.querySelectorAll('.room-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.room-btn').classList.add('active');
+            
+            // Animate camera to different positions
+            const positions = {
+                living: { x: 0, y: 1.6, z: 8 },
+                kitchen: { x: -5, y: 1.6, z: 3 },
+                bedroom: { x: 5, y: 1.6, z: 3 },
+                bathroom: { x: 0, y: 1.6, z: -2 },
+                terrace: { x: 0, y: 3, z: 10 }
+            };
+            
+            const targetPos = positions[roomId];
+            animateCamera(targetPos);
+        };
+
+        function animateCamera(targetPos) {
+            const startPos = camera.position.clone();
+            const duration = 1500;
+            const startTime = Date.now();
+
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeInOutCubic(progress);
+
+                camera.position.x = startPos.x + (targetPos.x - startPos.x) * eased;
+                camera.position.y = startPos.y + (targetPos.y - startPos.y) * eased;
+                camera.position.z = startPos.z + (targetPos.z - startPos.z) * eased;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            update();
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // UI Functions
+        window.toggleFullscreen = function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        };
+
+        window.enterVRMode = function() {
+            alert('VR Mode: This feature requires a WebXR-compatible VR headset.\n\nFor the best experience, use:\n• Meta Quest 2/3/Pro\n• HTC Vive\n• Valve Index\n\nConnect your headset and try again!');
+        };
+
+        window.scheduleTour = function() {
+            alert('📞 Schedule a Tour\n\nThank you for your interest in Skyline Penthouse!\n\nOur team will contact you within 24 hours to arrange a private viewing.\n\nContact: (212) 555-0123\nEmail: luxury@estates.com');
+        };
+
+        window.saveProperty = function() {
+            alert('💾 Property Saved!\n\nSkyline Penthouse has been added to your favorites.\n\nYou can view all saved properties in your dashboard.');
+        };
+    </script>
+</body>
+</html>
