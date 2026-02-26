@@ -80,6 +80,7 @@
             background: linear-gradient(135deg, var(--gold), var(--gold-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 15px;
             letter-spacing: 4px;
         }
@@ -556,6 +557,7 @@
             background: #000;
             z-index: 9999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             opacity: 0;
@@ -634,6 +636,10 @@
                 top: 90px;
                 right: 20px;
             }
+
+            .loading-title {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
@@ -648,10 +654,8 @@
 
     <!-- Scene Transition -->
     <div class="scene-transition" id="sceneTransition">
-        <div style="text-align: center;">
-            <div class="transition-spinner"></div>
-            <div class="transition-text" id="transitionText">Loading room...</div>
-        </div>
+        <div class="transition-spinner"></div>
+        <div class="transition-text" id="transitionText">Loading room...</div>
     </div>
 
     <!-- 360° Panorama -->
@@ -861,34 +865,50 @@
         // ==================== INITIALIZATION ====================
         function enterTour() {
             document.getElementById('loading').classList.add('hidden');
-            initViewer();
-            initRoomGallery();
+            setTimeout(() => {
+                initViewer();
+                initRoomGallery();
+            }, 100);
         }
 
         function initViewer() {
-            const scene = SCENES[currentScene];
-            
-            viewer = pannellum.viewer('panorama', {
-                type: 'equirectangular',
-                panorama: scene.panorama,
-                autoLoad: true,
-                showControls: false,
-                mouseZoom: true,
-                autoRotate: -2,
-                autoRotateInactivityDelay: 3000,
-                hfov: 100,
-                pitch: 0,
-                yaw: 0,
-                minHfov: 50,
-                maxHfov: 120,
-                hotSpots: createHotspots(scene.hotspots)
-            });
+            try {
+                const scene = SCENES[currentScene];
+                
+                viewer = pannellum.viewer('panorama', {
+                    type: 'equirectangular',
+                    panorama: scene.panorama,
+                    autoLoad: true,
+                    showControls: false,
+                    mouseZoom: true,
+                    autoRotate: -2,
+                    autoRotateInactivityDelay: 3000,
+                    hfov: 100,
+                    pitch: 0,
+                    yaw: 0,
+                    minHfov: 50,
+                    maxHfov: 120,
+                    hotSpots: createHotspots(scene.hotspots)
+                });
 
-            viewer.on('mouseup', updateCompass);
-            viewer.on('touchend', updateCompass);
-            
-            updateRoomInfo(currentScene);
-            updateMinimap(currentScene);
+                viewer.on('load', () => {
+                    console.log('Panorama loaded successfully');
+                });
+
+                viewer.on('error', (err) => {
+                    console.error('Panorama error:', err);
+                    alert('Error loading panorama. Please refresh the page.');
+                });
+
+                viewer.on('mouseup', updateCompass);
+                viewer.on('touchend', updateCompass);
+                
+                updateRoomInfo(currentScene);
+                updateMinimap(currentScene);
+            } catch (error) {
+                console.error('Viewer initialization error:', error);
+                alert('Error initializing VR tour. Please refresh the page.');
+            }
         }
 
         function createHotspots(hotspots) {
@@ -914,27 +934,33 @@
             transition.classList.add('active');
 
             setTimeout(() => {
-                currentScene = sceneName;
-                viewer.loadScene(scene.panorama, 0, 0, 100);
-                viewer.removeAllHotSpots();
-                scene.hotspots.forEach(spot => {
-                    viewer.addHotSpot({
-                        pitch: spot.pitch,
-                        yaw: spot.yaw,
-                        cssClass: 'hotspot-nav',
-                        createTooltipFunc: (div) => {
-                            div.innerHTML = `<span>${spot.icon}</span>`;
-                            div.title = spot.tooltip;
-                        },
-                        clickHandlerFunc: () => loadScene(spot.target)
+                try {
+                    currentScene = sceneName;
+                    viewer.loadScene(scene.panorama, 0, 0, 100);
+                    viewer.removeAllHotSpots();
+                    scene.hotspots.forEach(spot => {
+                        viewer.addHotSpot({
+                            pitch: spot.pitch,
+                            yaw: spot.yaw,
+                            cssClass: 'hotspot-nav',
+                            createTooltipFunc: (div) => {
+                                div.innerHTML = `<span>${spot.icon}</span>`;
+                                div.title = spot.tooltip;
+                            },
+                            clickHandlerFunc: () => loadScene(spot.target)
+                        });
                     });
-                });
 
-                updateRoomInfo(sceneName);
-                updateMinimap(sceneName);
-                updateRoomGallery(sceneName);
+                    updateRoomInfo(sceneName);
+                    updateMinimap(sceneName);
+                    updateRoomGallery(sceneName);
 
-                setTimeout(() => transition.classList.remove('active'), 300);
+                    setTimeout(() => transition.classList.remove('active'), 300);
+                } catch (error) {
+                    console.error('Scene loading error:', error);
+                    transition.classList.remove('active');
+                    alert('Error loading room. Please try again.');
+                }
             }, 400);
         }
 
@@ -983,9 +1009,13 @@
 
         function updateCompass() {
             if (!viewer) return;
-            const yaw = viewer.getYaw();
-            document.getElementById('compassNeedle').style.transform = `rotate(${yaw}deg)`;
-            document.getElementById('minimapDirection').style.transform = `translate(-50%, -50%) rotate(${yaw}deg)`;
+            try {
+                const yaw = viewer.getYaw();
+                document.getElementById('compassNeedle').style.transform = `rotate(${yaw}deg)`;
+                document.getElementById('minimapDirection').style.transform = `translate(-50%, -50%) rotate(${yaw}deg)`;
+            } catch (error) {
+                console.error('Compass update error:', error);
+            }
         }
 
         function toggleInfoPanel() {
@@ -998,7 +1028,9 @@
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error('Fullscreen error:', err);
+                });
             } else {
                 document.exitFullscreen();
             }
@@ -1011,10 +1043,14 @@
                     title: `${SCENES[currentScene].name} - The Manhattan Penthouse`,
                     text: 'Explore this stunning luxury penthouse!',
                     url: url
-                });
+                }).catch(err => console.log('Share error:', err));
             } else {
-                navigator.clipboard.writeText(url);
-                alert(`Link copied: ${url}`);
+                navigator.clipboard.writeText(url).then(() => {
+                    alert(`Link copied: ${url}`);
+                }).catch(err => {
+                    console.error('Clipboard error:', err);
+                    alert(`Share this link: ${url}`);
+                });
             }
         }
 
@@ -1023,6 +1059,11 @@
             const params = new URLSearchParams(window.location.search);
             const room = params.get('room');
             if (room && SCENES[room]) currentScene = room;
+        });
+
+        // Error handling
+        window.addEventListener('error', (e) => {
+            console.error('Global error:', e.error);
         });
     </script>
 </body>
