@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Real Estate VR Tour | Professional Property Showcase</title>
-    <meta name="description" content="Immersive 360° virtual property tours with professional photography and interactive features">
+    <title>The Manhattan Penthouse | $8.95M Luxury VR Tour</title>
+    <meta name="description" content="Immersive 360° virtual tour of a 4,200 sq ft luxury penthouse at 432 Park Avenue, Manhattan">
     
     <!-- Pannellum 360° Viewer -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         * {
             margin: 0;
@@ -31,7 +31,7 @@
             height: 100vh;
         }
 
-        /* Elegant Loading Screen */
+        /* Premium Loading Screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -53,38 +53,41 @@
         }
 
         .loading-logo {
-            font-size: 80px;
-            margin-bottom: 30px;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 40px;
             animation: pulse 2s ease-in-out infinite;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.9; }
         }
 
         .loading-title {
             font-family: 'Playfair Display', serif;
-            font-size: 48px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 50%, #C9A961 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
+            margin-bottom: 15px;
+            letter-spacing: 4px;
+            text-align: center;
         }
 
         .loading-subtitle {
-            font-size: 18px;
+            font-size: 16px;
             color: rgba(255,255,255,0.7);
             margin-bottom: 50px;
             font-weight: 300;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
         .loading-bar {
             width: 400px;
-            height: 3px;
+            height: 2px;
             background: rgba(255,255,255,0.1);
             border-radius: 2px;
             overflow: hidden;
@@ -93,19 +96,26 @@
 
         .loading-progress {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #C9A961, #F4E4C1);
             width: 0%;
             transition: width 0.3s ease;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 0 20px rgba(201, 169, 97, 0.6);
         }
 
-        /* Premium Header */
+        .loading-status {
+            margin-top: 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 300;
+        }
+
+        /* Header */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 30px 50px;
+            padding: 25px 50px;
             background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%);
             backdrop-filter: blur(20px);
             display: flex;
@@ -126,48 +136,68 @@
             gap: 15px;
         }
 
-        .brand-icon {
-            font-size: 36px;
-            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: #000;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
         }
 
         .brand-name {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
             letter-spacing: 2px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #C9A961;
         }
 
-        .property-info-header {
+        .brand-tagline {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .property-header {
             text-align: center;
         }
 
         .property-name {
             font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 700;
             margin-bottom: 5px;
+            letter-spacing: 1px;
         }
 
         .property-location {
-            font-size: 14px;
-            color: rgba(255,255,255,0.7);
-            font-weight: 300;
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
         }
 
         .header-actions {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .btn {
             padding: 12px 24px;
             border: none;
             border-radius: 50px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -178,14 +208,14 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(201, 169, 97, 0.5);
         }
 
         .btn-secondary {
@@ -196,7 +226,7 @@
         }
 
         .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
         }
 
         /* Room Navigation */
@@ -207,11 +237,11 @@
             transform: translateX(-50%);
             background: rgba(0,0,0,0.95);
             backdrop-filter: blur(30px);
-            padding: 25px 35px;
+            padding: 20px 30px;
             border-radius: 100px;
             display: flex;
-            gap: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
+            gap: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.2);
             z-index: 1000;
             animation: slideUp 1s ease 0.3s both;
         }
@@ -225,7 +255,7 @@
             background: rgba(255,255,255,0.05);
             border: 2px solid transparent;
             color: white;
-            padding: 15px 25px;
+            padding: 14px 22px;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -233,28 +263,29 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            min-width: 110px;
+            min-width: 100px;
             font-family: 'Inter', sans-serif;
         }
 
         .room-btn:hover {
             background: rgba(255,255,255,0.1);
-            border-color: rgba(102, 126, 234, 0.5);
+            border-color: rgba(201, 169, 97, 0.5);
             transform: translateY(-5px);
         }
 
         .room-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(244, 228, 193, 0.3) 100%);
+            border-color: #C9A961;
+            box-shadow: 0 8px 25px rgba(201, 169, 97, 0.4);
             transform: translateY(-5px);
         }
 
         .room-icon {
-            font-size: 32px;
+            font-size: 28px;
         }
 
         .room-label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
@@ -262,16 +293,16 @@
         /* Property Details Panel */
         .details-panel {
             position: fixed;
-            top: 120px;
+            top: 110px;
             right: 40px;
-            width: 450px;
-            max-height: calc(100vh - 180px);
+            width: 480px;
+            max-height: calc(100vh - 170px);
             background: rgba(0,0,0,0.95);
             backdrop-filter: blur(30px);
             border-radius: 25px;
             padding: 40px;
             overflow-y: auto;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.2);
             z-index: 1000;
             animation: slideInRight 1s ease 0.5s both;
         }
@@ -284,19 +315,20 @@
         .details-header {
             margin-bottom: 35px;
             padding-bottom: 30px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(201, 169, 97, 0.2);
         }
 
         .details-title {
             font-family: 'Playfair Display', serif;
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 38px;
+            font-weight: 800;
             margin-bottom: 12px;
             line-height: 1.2;
+            color: #C9A961;
         }
 
         .details-address {
-            font-size: 15px;
+            font-size: 14px;
             color: rgba(255,255,255,0.6);
             margin-bottom: 25px;
             display: flex;
@@ -306,9 +338,9 @@
 
         .details-price {
             font-family: 'Playfair Display', serif;
-            font-size: 48px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -316,33 +348,35 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 18px;
             margin-bottom: 35px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.1) 0%, rgba(244, 228, 193, 0.05) 100%);
             padding: 25px;
-            border-radius: 20px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 18px;
+            border: 1px solid rgba(201, 169, 97, 0.2);
             text-align: center;
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.2);
+            border-color: rgba(201, 169, 97, 0.4);
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 800;
-            color: #667eea;
+            color: #C9A961;
             margin-bottom: 8px;
+            font-family: 'Playfair Display', serif;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(255,255,255,0.6);
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -354,13 +388,14 @@
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             margin-bottom: 20px;
-            color: #667eea;
+            color: #C9A961;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-family: 'Playfair Display', serif;
         }
 
         .features-list {
@@ -368,14 +403,15 @@
         }
 
         .features-list li {
-            padding: 15px 0;
+            padding: 14px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 15px;
+            font-size: 14px;
             color: rgba(255,255,255,0.8);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             transition: all 0.3s ease;
+            line-height: 1.6;
         }
 
         .features-list li:hover {
@@ -385,14 +421,39 @@
 
         .features-list li::before {
             content: "✓";
-            color: #4ECDC4;
+            color: #C9A961;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .floor-plan-preview {
+            width: 100%;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(201, 169, 97, 0.2);
+        }
+
+        .floor-plan-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.3);
+        }
+
+        .floor-plan-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .action-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 30px;
         }
 
@@ -401,32 +462,33 @@
             padding: 18px 28px;
             border: none;
             border-radius: 15px;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Inter', sans-serif;
         }
 
         .action-btn-primary {
-            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
-            color: white;
-            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(201, 169, 97, 0.3);
         }
 
         .action-btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(78, 205, 196, 0.6);
+            box-shadow: 0 8px 30px rgba(201, 169, 97, 0.5);
         }
 
         .action-btn-secondary {
             background: rgba(255,255,255,0.1);
             color: white;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(201, 169, 97, 0.3);
         }
 
         .action-btn-secondary:hover {
             background: rgba(255,255,255,0.15);
+            border-color: rgba(201, 169, 97, 0.5);
         }
 
         /* Controls Guide */
@@ -438,7 +500,7 @@
             backdrop-filter: blur(30px);
             padding: 25px 30px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.2);
             z-index: 1000;
             animation: slideInLeft 1s ease 0.7s both;
         }
@@ -449,17 +511,17 @@
         }
 
         .controls-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             margin-bottom: 15px;
-            color: #667eea;
+            color: #C9A961;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .control-item {
-            font-size: 14px;
-            color: rgba(255,255,255,0.8);
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
             margin: 10px 0;
             display: flex;
             align-items: center;
@@ -467,7 +529,64 @@
         }
 
         .control-icon {
-            font-size: 20px;
+            font-size: 18px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 15px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
         }
 
         /* Scrollbar */
@@ -481,14 +600,14 @@
         }
 
         .details-panel::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
             border-radius: 4px;
         }
 
         /* Responsive */
         @media (max-width: 1200px) {
             .details-panel {
-                width: 380px;
+                width: 400px;
             }
         }
 
@@ -497,35 +616,49 @@
                 padding: 20px;
             }
 
-            .brand-name {
+            .brand-text {
                 display: none;
             }
 
-            .property-info-header {
+            .property-header {
                 display: none;
             }
 
             .room-nav {
                 bottom: 20px;
-                padding: 20px 25px;
-                gap: 12px;
+                padding: 18px 25px;
+                gap: 10px;
                 max-width: 90%;
                 flex-wrap: wrap;
             }
 
             .room-btn {
-                min-width: 90px;
-                padding: 12px 18px;
+                min-width: 85px;
+                padding: 12px 16px;
+            }
+
+            .room-icon {
+                font-size: 24px;
+            }
+
+            .room-label {
+                font-size: 11px;
             }
 
             .details-panel {
                 right: 20px;
                 width: calc(100% - 40px);
                 max-width: 360px;
+                top: 100px;
             }
 
             .controls {
                 display: none;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                font-size: 12px;
             }
         }
     </style>
@@ -533,12 +666,13 @@
 <body>
     <!-- Loading Screen -->
     <div class="loading-screen" id="loading">
-        <div class="loading-logo">🏛️</div>
-        <div class="loading-title">PRESTIGE ESTATES</div>
-        <div class="loading-subtitle">LOADING LUXURY EXPERIENCE</div>
+        <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-21-862Z-58cabdb6-nano-banana-pro_1772087061764.jpg" alt="Logo" class="loading-logo">
+        <div class="loading-title">THE MANHATTAN</div>
+        <div class="loading-subtitle">Penthouse Collection</div>
         <div class="loading-bar">
             <div class="loading-progress" id="loadingProgress"></div>
         </div>
+        <div class="loading-status" id="loadingStatus">Initializing Virtual Tour...</div>
     </div>
 
     <!-- 360° Panorama Viewer -->
@@ -547,12 +681,15 @@
     <!-- Header -->
     <div class="header">
         <div class="brand">
-            <div class="brand-icon">🏛️</div>
-            <div class="brand-name">PRESTIGE ESTATES</div>
+            <div class="brand-logo">PE</div>
+            <div class="brand-text">
+                <div class="brand-name">PRESTIGE ESTATES</div>
+                <div class="brand-tagline">Luxury Properties</div>
+            </div>
         </div>
-        <div class="property-info-header">
+        <div class="property-header">
             <div class="property-name">The Manhattan Penthouse</div>
-            <div class="property-location">432 Park Avenue, New York</div>
+            <div class="property-location">432 Park Avenue, 85th Floor</div>
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" onclick="toggleFullscreen()">
@@ -580,7 +717,7 @@
         </button>
         <button class="room-btn" onclick="loadScene('bathroom')">
             <div class="room-icon">🛁</div>
-            <div class="room-label">Bathroom</div>
+            <div class="room-label">Spa Bath</div>
         </button>
         <button class="room-btn" onclick="loadScene('terrace')">
             <div class="room-icon">🌆</div>
@@ -620,19 +757,28 @@
 
         <div class="section">
             <div class="section-title">
+                <span>📐</span> Floor Plan
+            </div>
+            <div class="floor-plan-preview" onclick="openFloorPlan()">
+                <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-00-519Z-66c3a7f2-nano-banana-pro_1772087040241.jpg" alt="Floor Plan">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
                 <span>✨</span> Premium Features
             </div>
             <ul class="features-list">
                 <li>360° panoramic city views from every room</li>
-                <li>Floor-to-ceiling windows (12ft ceilings)</li>
-                <li>Smart home automation system</li>
+                <li>Floor-to-ceiling windows with 12-foot ceilings</li>
+                <li>Integrated smart home automation system</li>
                 <li>Private elevator with key-locked access</li>
-                <li>2,000 sq ft wraparound terrace</li>
-                <li>Italian Carrara marble throughout</li>
-                <li>Miele & Sub-Zero appliances</li>
-                <li>Custom walk-in closets</li>
-                <li>Wine cellar & climate control</li>
-                <li>24/7 white-glove concierge</li>
+                <li>2,000 sq ft wraparound terrace with outdoor kitchen</li>
+                <li>Italian Carrara marble flooring throughout</li>
+                <li>Miele and Sub-Zero professional appliances</li>
+                <li>Custom walk-in closets with built-in organization</li>
+                <li>Temperature-controlled wine cellar</li>
+                <li>24/7 white-glove concierge service</li>
             </ul>
         </div>
 
@@ -641,11 +787,14 @@
                 <span>🏗️</span> Building Amenities
             </div>
             <ul class="features-list">
-                <li>Private fitness center & spa</li>
-                <li>Residents' lounge & library</li>
-                <li>Rooftop garden & pool</li>
-                <li>Valet parking service</li>
-                <li>Pet spa & grooming</li>
+                <li>Private fitness center with personal trainers</li>
+                <li>Full-service spa and wellness center</li>
+                <li>Residents' lounge with catering kitchen</li>
+                <li>Rooftop garden and infinity pool</li>
+                <li>Valet parking and car wash service</li>
+                <li>Pet spa and grooming facilities</li>
+                <li>Private screening room</li>
+                <li>Business center and conference rooms</li>
             </ul>
         </div>
 
@@ -661,10 +810,10 @@
 
     <!-- Controls Guide -->
     <div class="controls">
-        <div class="controls-title">Controls</div>
+        <div class="controls-title">Navigation</div>
         <div class="control-item">
             <span class="control-icon">🖱️</span>
-            <span>Drag to look around</span>
+            <span>Drag to explore 360°</span>
         </div>
         <div class="control-item">
             <span class="control-icon">🔍</span>
@@ -672,18 +821,26 @@
         </div>
         <div class="control-item">
             <span class="control-icon">👆</span>
-            <span>Click rooms to navigate</span>
+            <span>Click rooms below</span>
+        </div>
+    </div>
+
+    <!-- Floor Plan Modal -->
+    <div class="modal" id="floorPlanModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFloorPlan()">×</button>
+            <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-00-519Z-66c3a7f2-nano-banana-pro_1772087040241.jpg" alt="Detailed Floor Plan">
         </div>
     </div>
 
     <script>
-        // High-quality 360° panorama images (using Unsplash for demo)
+        // Custom-generated 360° panorama images
         const scenes = {
-            living: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=4096&q=95',
-            kitchen: 'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=4096&q=95',
-            bedroom: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=4096&q=95',
-            bathroom: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=4096&q=95',
-            terrace: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=4096&q=95'
+            living: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-16-18-735Z-096f2166-nano-banana-pro_1772086578547.jpg',
+            kitchen: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-16-42-878Z-c2d030cf-nano-banana-pro_1772086602741.jpg',
+            bedroom: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-17-05-092Z-534f9d26-nano-banana-pro_1772086624893.jpg',
+            bathroom: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-17-31-429Z-fcfa8c60-nano-banana-pro_1772086651290.jpg',
+            terrace: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-17-53-954Z-510c87ed-nano-banana-pro_1772086673797.jpg'
         };
 
         let viewer;
@@ -698,7 +855,7 @@
                 showControls: false,
                 mouseZoom: true,
                 autoRotate: -2,
-                autoRotateInactivityDelay: 3000,
+                autoRotateInactivityDelay: 5000,
                 hfov: 100,
                 pitch: 0,
                 yaw: 0,
@@ -708,7 +865,7 @@
                 onLoad: function() {
                     setTimeout(() => {
                         document.getElementById('loading').classList.add('hidden');
-                    }, 500);
+                    }, 800);
                 }
             });
         }
@@ -723,7 +880,7 @@
             });
             event.target.closest('.room-btn').classList.add('active');
             
-            // Load new panorama
+            // Load new panorama with smooth transition
             viewer.loadScene(scenes[sceneName]);
         };
 
@@ -739,37 +896,81 @@
         window.shareProperty = function() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'The Manhattan Penthouse',
-                    text: 'Check out this stunning $8.95M penthouse in Manhattan!',
+                    title: 'The Manhattan Penthouse - $8.95M',
+                    text: 'Explore this stunning 4,200 sq ft luxury penthouse with 360° virtual tour!',
                     url: window.location.href
                 });
             } else {
-                alert('📤 Share this property:\n\n' + window.location.href + '\n\nLink copied to clipboard!');
-                navigator.clipboard.writeText(window.location.href);
+                const url = window.location.href;
+                navigator.clipboard.writeText(url);
+                alert('🔗 Link Copied!\n\nShare this exclusive property:\n' + url);
             }
         };
 
         window.scheduleTour = function() {
-            alert('📞 Schedule a Private Tour\n\nThank you for your interest!\n\nOur luxury property specialist will contact you within 2 hours.\n\n☎️ (212) 555-LUXURY\n✉️ concierge@prestigeestates.com');
+            alert('📞 Schedule Your Private Tour\n\n' +
+                  'Thank you for your interest in The Manhattan Penthouse!\n\n' +
+                  'Our luxury property specialist will contact you within 2 hours to arrange a private viewing at your convenience.\n\n' +
+                  '☎️  Direct: (212) 555-LUXURY\n' +
+                  '✉️  Email: concierge@prestigeestates.com\n\n' +
+                  'Available 7 days a week, 9 AM - 9 PM EST');
         };
 
         window.downloadBrochure = function() {
-            alert('📄 Property Brochure\n\nA detailed PDF brochure with floor plans, specifications, and professional photography will be sent to your email.\n\nWould you like to receive it?');
+            alert('📄 Property Brochure\n\n' +
+                  'A comprehensive PDF brochure will be sent to your email including:\n\n' +
+                  '• High-resolution photography\n' +
+                  '• Detailed floor plans\n' +
+                  '• Complete specifications\n' +
+                  '• Building amenities\n' +
+                  '• Neighborhood information\n' +
+                  '• Financing options\n\n' +
+                  'Please provide your email address to receive the brochure.');
+        };
+
+        window.openFloorPlan = function() {
+            document.getElementById('floorPlanModal').classList.add('active');
+        };
+
+        window.closeFloorPlan = function() {
+            document.getElementById('floorPlanModal').classList.remove('active');
         };
 
         // Loading progress simulation
         let progress = 0;
+        const statusMessages = [
+            'Initializing Virtual Tour...',
+            'Loading 360° Panoramas...',
+            'Rendering High-Resolution Images...',
+            'Preparing Interactive Features...',
+            'Almost Ready...'
+        ];
+        let statusIndex = 0;
+
         const loadingInterval = setInterval(() => {
-            progress += Math.random() * 20;
+            progress += Math.random() * 15;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
+                document.getElementById('loadingStatus').textContent = 'Welcome to The Manhattan Penthouse';
+            } else {
+                if (progress > statusIndex * 20 && statusIndex < statusMessages.length - 1) {
+                    statusIndex++;
+                    document.getElementById('loadingStatus').textContent = statusMessages[statusIndex];
+                }
             }
             document.getElementById('loadingProgress').style.width = progress + '%';
-        }, 150);
+        }, 200);
 
         // Initialize on load
         window.addEventListener('load', initViewer);
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFloorPlan();
+            }
+        });
     </script>
 </body>
 </html>
