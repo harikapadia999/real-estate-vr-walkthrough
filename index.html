@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Manhattan Penthouse | $8.95M Luxury VR Tour</title>
-    <meta name="description" content="Immersive 360° virtual tour of a 4,200 sq ft luxury penthouse at 432 Park Avenue, Manhattan">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>The Manhattan Penthouse | Professional VR Tour</title>
+    <meta name="description" content="Immersive 360° virtual tour with interactive hotspots, minimap navigation, and professional features">
     
     <!-- Pannellum 360° Viewer -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
@@ -19,19 +21,31 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #C9A961;
+            --gold-light: #F4E4C1;
+            --dark: #0f0c29;
+            --glass: rgba(0,0,0,0.85);
+            --glass-light: rgba(0,0,0,0.6);
+            --border: rgba(201, 169, 97, 0.3);
+            --shadow: 0 20px 60px rgba(0,0,0,0.9);
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             overflow: hidden;
             background: #000;
             color: #fff;
+            -webkit-font-smoothing: antialiased;
         }
 
         #panorama {
             width: 100vw;
             height: 100vh;
+            position: relative;
         }
 
-        /* Premium Loading Screen */
+        /* ==================== LOADING SCREEN ==================== */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -50,12 +64,13 @@
         .loading-screen.hidden {
             opacity: 0;
             visibility: hidden;
+            pointer-events: none;
         }
 
         .loading-logo {
             width: 120px;
             height: 120px;
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -77,7 +92,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 52px;
             font-weight: 800;
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 50%, #C9A961 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 15px;
@@ -96,9 +111,9 @@
 
         .loading-bar {
             width: 400px;
-            height: 2px;
+            height: 3px;
             background: rgba(255,255,255,0.1);
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
             position: relative;
             margin-bottom: 30px;
@@ -106,7 +121,7 @@
 
         .loading-progress {
             height: 100%;
-            background: linear-gradient(90deg, #C9A961, #F4E4C1);
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
             width: 0%;
             transition: width 0.3s ease;
             box-shadow: 0 0 20px rgba(201, 169, 97, 0.6);
@@ -121,7 +136,7 @@
 
         .enter-btn {
             padding: 18px 50px;
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
             color: #000;
             border: none;
             border-radius: 50px;
@@ -132,7 +147,7 @@
             box-shadow: 0 10px 40px rgba(201, 169, 97, 0.4);
             transition: all 0.3s ease;
             opacity: 0;
-            animation: fadeInButton 0.5s ease 2s forwards;
+            animation: fadeInButton 0.5s ease 1.5s forwards;
         }
 
         @keyframes fadeInButton {
@@ -144,18 +159,14 @@
             box-shadow: 0 15px 50px rgba(201, 169, 97, 0.6);
         }
 
-        .enter-btn:active {
-            transform: translateY(-1px);
-        }
-
-        /* Header */
+        /* ==================== HEADER ==================== */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 25px 50px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%);
+            padding: 20px 40px;
+            background: linear-gradient(180deg, var(--glass) 0%, rgba(0,0,0,0) 100%);
             backdrop-filter: blur(20px);
             display: flex;
             justify-content: space-between;
@@ -178,7 +189,7 @@
         .brand-logo {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -196,14 +207,14 @@
 
         .brand-name {
             font-family: 'Playfair Display', serif;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: 2px;
-            color: #C9A961;
+            color: var(--gold);
         }
 
         .brand-tagline {
-            font-size: 11px;
+            font-size: 10px;
             color: rgba(255,255,255,0.5);
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -215,39 +226,39 @@
 
         .property-name {
             font-family: 'Playfair Display', serif;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 5px;
             letter-spacing: 1px;
         }
 
         .property-location {
-            font-size: 13px;
+            font-size: 12px;
             color: rgba(255,255,255,0.6);
             font-weight: 400;
         }
 
         .header-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 50px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
             color: #000;
             box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
         }
@@ -268,19 +279,165 @@
             background: rgba(255,255,255,0.15);
         }
 
-        /* Room Navigation */
-        .room-nav {
+        /* ==================== MINIMAP ==================== */
+        .minimap-container {
             position: fixed;
-            bottom: 40px;
+            bottom: 30px;
+            left: 30px;
+            width: 280px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            z-index: 1000;
+            animation: slideInLeft 1s ease 0.5s both;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .minimap-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .minimap-canvas {
+            width: 100%;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .minimap-canvas img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0.7;
+        }
+
+        .minimap-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(201, 169, 97, 0.8);
+            animation: markerPulse 2s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes markerPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .minimap-direction {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 12px solid var(--gold);
+            transform-origin: center;
+            filter: drop-shadow(0 0 5px rgba(201, 169, 97, 0.8));
+        }
+
+        /* ==================== COMPASS ==================== */
+        .compass {
+            position: fixed;
+            top: 120px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border-radius: 50%;
+            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 1s ease 0.7s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .compass-needle {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .compass-needle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 25px solid #ff4444;
+            transform: translate(-50%, -100%);
+        }
+
+        .compass-needle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 25px solid #fff;
+            transform: translate(-50%, 0%);
+        }
+
+        .compass-label {
+            position: absolute;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .compass-label.n { top: 5px; left: 50%; transform: translateX(-50%); }
+        .compass-label.e { right: 8px; top: 50%; transform: translateY(-50%); }
+        .compass-label.s { bottom: 5px; left: 50%; transform: translateX(-50%); }
+        .compass-label.w { left: 8px; top: 50%; transform: translateY(-50%); }
+
+        /* ==================== ROOM GALLERY ==================== */
+        .room-gallery {
+            position: fixed;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.95);
+            background: var(--glass);
             backdrop-filter: blur(30px);
-            padding: 20px 30px;
+            padding: 15px 20px;
             border-radius: 100px;
             display: flex;
-            gap: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.2);
+            gap: 12px;
+            box-shadow: var(--shadow), 0 0 0 1px var(--border);
             z-index: 1000;
             animation: slideUp 1s ease 0.3s both;
         }
@@ -290,414 +447,368 @@
             to { transform: translate(-50%, 0); opacity: 1; }
         }
 
-        .room-btn {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid transparent;
-            color: white;
-            padding: 14px 22px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            min-width: 100px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .room-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(201, 169, 97, 0.5);
-            transform: translateY(-5px);
-        }
-
-        .room-btn.active {
-            background: linear-gradient(135deg, rgba(201, 169, 97, 0.3) 0%, rgba(244, 228, 193, 0.3) 100%);
-            border-color: #C9A961;
-            box-shadow: 0 8px 25px rgba(201, 169, 97, 0.4);
-            transform: translateY(-5px);
-        }
-
-        .room-icon {
-            font-size: 28px;
-        }
-
-        .room-label {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        /* Property Details Panel */
-        .details-panel {
-            position: fixed;
-            top: 110px;
-            right: 40px;
-            width: 480px;
-            max-height: calc(100vh - 170px);
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(30px);
-            border-radius: 25px;
-            padding: 40px;
-            overflow-y: auto;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.2);
-            z-index: 1000;
-            animation: slideInRight 1s ease 0.5s both;
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(600px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .details-header {
-            margin-bottom: 35px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid rgba(201, 169, 97, 0.2);
-        }
-
-        .details-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 38px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            line-height: 1.2;
-            color: #C9A961;
-        }
-
-        .details-address {
-            font-size: 14px;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .details-price {
-            font-family: 'Playfair Display', serif;
-            font-size: 52px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-            margin-bottom: 35px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(201, 169, 97, 0.1) 0%, rgba(244, 228, 193, 0.05) 100%);
-            padding: 25px;
-            border-radius: 18px;
-            border: 1px solid rgba(201, 169, 97, 0.2);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.2);
-            border-color: rgba(201, 169, 97, 0.4);
-        }
-
-        .stat-value {
-            font-size: 34px;
-            font-weight: 800;
-            color: #C9A961;
-            margin-bottom: 8px;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: rgba(255,255,255,0.6);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-
-        .section {
-            margin-bottom: 35px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #C9A961;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .features-list {
-            list-style: none;
-        }
-
-        .features-list li {
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
-            color: rgba(255,255,255,0.8);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            transition: all 0.3s ease;
-            line-height: 1.6;
-        }
-
-        .features-list li:hover {
-            padding-left: 10px;
-            color: #fff;
-        }
-
-        .features-list li::before {
-            content: "✓";
-            color: #C9A961;
-            font-weight: bold;
-            font-size: 16px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .floor-plan-preview {
-            width: 100%;
-            height: 200px;
-            background: rgba(255,255,255,0.05);
+        .room-thumb {
+            width: 70px;
+            height: 70px;
             border-radius: 15px;
-            margin-bottom: 15px;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(201, 169, 97, 0.2);
+            position: relative;
+            border: 3px solid transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255,255,255,0.05);
         }
 
-        .floor-plan-preview:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(201, 169, 97, 0.3);
+        .room-thumb:hover {
+            transform: translateY(-8px) scale(1.1);
+            border-color: rgba(201, 169, 97, 0.5);
         }
 
-        .floor-plan-preview img {
+        .room-thumb.active {
+            border-color: var(--gold);
+            box-shadow: 0 8px 25px rgba(201, 169, 97, 0.5);
+            transform: translateY(-8px) scale(1.1);
+        }
+
+        .room-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 30px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 18px 28px;
-            border: none;
-            border-radius: 15px;
-            font-size: 14px;
+        .room-thumb-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            padding: 8px 6px 6px;
+            font-size: 9px;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .action-btn-primary {
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
-            color: #000;
-            box-shadow: 0 4px 20px rgba(201, 169, 97, 0.3);
+        .room-thumb-icon {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 18px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
 
-        .action-btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(201, 169, 97, 0.5);
+        /* ==================== HOTSPOTS ==================== */
+        .pnlm-hotspot {
+            width: 60px !important;
+            height: 60px !important;
+            background: radial-gradient(circle, rgba(201, 169, 97, 0.9) 0%, rgba(201, 169, 97, 0.3) 70%, transparent 100%) !important;
+            border: 3px solid var(--gold) !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 28px !important;
+            animation: hotspotPulse 2s ease-in-out infinite !important;
+            box-shadow: 0 0 30px rgba(201, 169, 97, 0.6) !important;
         }
 
-        .action-btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 2px solid rgba(201, 169, 97, 0.3);
+        @keyframes hotspotPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(201, 169, 97, 0.6); }
+            50% { transform: scale(1.15); box-shadow: 0 0 50px rgba(201, 169, 97, 0.9); }
         }
 
-        .action-btn-secondary:hover {
-            background: rgba(255,255,255,0.15);
-            border-color: rgba(201, 169, 97, 0.5);
+        .pnlm-hotspot:hover {
+            transform: scale(1.3) !important;
+            background: radial-gradient(circle, rgba(201, 169, 97, 1) 0%, rgba(201, 169, 97, 0.5) 70%, transparent 100%) !important;
+            box-shadow: 0 0 60px rgba(201, 169, 97, 1) !important;
         }
 
-        /* Controls Guide */
-        .controls {
+        .hotspot-nav {
+            color: #fff !important;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .hotspot-info {
+            background: var(--glass) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 2px solid var(--gold) !important;
+            color: #fff !important;
+        }
+
+        /* ==================== INFO PANEL ==================== */
+        .info-panel {
             position: fixed;
-            bottom: 40px;
-            left: 40px;
-            background: rgba(0,0,0,0.95);
+            top: 120px;
+            right: 30px;
+            width: 350px;
+            max-height: calc(100vh - 170px);
+            background: var(--glass);
             backdrop-filter: blur(30px);
-            padding: 25px 30px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.2);
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: var(--shadow), 0 0 0 1px var(--border);
             z-index: 1000;
-            animation: slideInLeft 1s ease 0.7s both;
+            animation: slideInRight 1s ease 0.5s both;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
         }
 
-        @keyframes slideInLeft {
-            from { transform: translateX(-500px); opacity: 0; }
+        .info-panel.collapsed {
+            transform: translateX(calc(100% + 30px));
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(500px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
 
-        .controls-title {
+        .info-toggle {
+            position: fixed;
+            top: 120px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            z-index: 1001;
+            transition: all 0.3s ease;
+            animation: fadeIn 1s ease 0.5s both;
+        }
+
+        .info-toggle:hover {
+            background: rgba(201, 169, 97, 0.2);
+            transform: scale(1.1);
+        }
+
+        .info-header {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--gold);
+        }
+
+        .info-subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .info-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .info-stat {
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.1) 0%, rgba(244, 228, 193, 0.05) 100%);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .info-stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .info-stat-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .info-features {
+            list-style: none;
+        }
+
+        .info-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             font-size: 13px;
+            color: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .info-features li::before {
+            content: "✓";
+            color: var(--gold);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* ==================== CONTROLS GUIDE ==================== */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            z-index: 1000;
+            animation: fadeIn 1s ease 0.9s both;
+        }
+
+        .controls-title {
+            font-size: 11px;
             font-weight: 700;
-            margin-bottom: 15px;
-            color: #C9A961;
+            margin-bottom: 12px;
+            color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .control-item {
-            font-size: 13px;
+            font-size: 12px;
             color: rgba(255,255,255,0.7);
-            margin: 10px 0;
+            margin: 8px 0;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .control-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
+        /* ==================== SCENE TRANSITION ==================== */
+        .scene-transition {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.active {
+            background: #000;
+            z-index: 9999;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .scene-transition.active {
+            opacity: 1;
+            pointer-events: all;
         }
 
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            position: relative;
+        .transition-content {
+            text-align: center;
         }
 
-        .modal-content img {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 15px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: -50px;
-            right: 0;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
+        .transition-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(201, 169, 97, 0.2);
+            border-top-color: var(--gold);
             border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
 
-        .modal-close:hover {
-            background: rgba(255,255,255,0.2);
-            transform: rotate(90deg);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        /* Scrollbar */
-        .details-panel::-webkit-scrollbar {
-            width: 8px;
+        .transition-text {
+            font-size: 16px;
+            color: var(--gold);
+            font-weight: 600;
         }
 
-        .details-panel::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 4px;
-        }
-
-        .details-panel::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
-            border-radius: 4px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .details-panel {
-                width: 400px;
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .info-panel {
+                width: 300px;
+            }
+            
+            .minimap-container {
+                width: 240px;
             }
         }
 
         @media (max-width: 768px) {
             .header {
-                padding: 20px;
+                padding: 15px 20px;
             }
 
-            .brand-text {
-                display: none;
-            }
-
+            .brand-text,
             .property-header {
                 display: none;
             }
 
-            .room-nav {
-                bottom: 20px;
-                padding: 18px 25px;
-                gap: 10px;
-                max-width: 90%;
-                flex-wrap: wrap;
+            .minimap-container {
+                bottom: 140px;
+                left: 20px;
+                width: 200px;
             }
 
-            .room-btn {
-                min-width: 85px;
-                padding: 12px 16px;
-            }
-
-            .room-icon {
-                font-size: 24px;
-            }
-
-            .room-label {
-                font-size: 11px;
-            }
-
-            .details-panel {
+            .compass {
+                top: 90px;
                 right: 20px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .compass-needle {
+                width: 45px;
+                height: 45px;
+            }
+
+            .room-gallery {
+                bottom: 20px;
+                padding: 12px 15px;
+                gap: 8px;
+                max-width: calc(100% - 40px);
+                overflow-x: auto;
+            }
+
+            .room-thumb {
+                width: 60px;
+                height: 60px;
+                flex-shrink: 0;
+            }
+
+            .info-panel {
                 width: calc(100% - 40px);
-                max-width: 360px;
-                top: 100px;
+                max-width: 350px;
+                right: 20px;
+                top: 90px;
+            }
+
+            .info-toggle {
+                top: 90px;
+                right: 20px;
             }
 
             .controls {
                 display: none;
-            }
-
-            .btn {
-                padding: 10px 18px;
-                font-size: 12px;
             }
 
             .loading-title {
@@ -705,8 +816,23 @@
             }
 
             .loading-bar {
-                width: 300px;
+                width: 280px;
             }
+        }
+
+        /* Scrollbar */
+        .info-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-panel::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+
+        .info-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -715,14 +841,22 @@
     <div class="loading-screen" id="loading">
         <div class="loading-logo">PE</div>
         <div class="loading-title">THE MANHATTAN</div>
-        <div class="loading-subtitle">Penthouse Collection</div>
+        <div class="loading-subtitle">Professional VR Experience</div>
         <div class="loading-bar">
             <div class="loading-progress" id="loadingProgress"></div>
         </div>
-        <div class="loading-status" id="loadingStatus">Ready to explore...</div>
+        <div class="loading-status" id="loadingStatus">Initializing virtual tour...</div>
         <button class="enter-btn" id="enterBtn" onclick="enterTour()">
             Enter Virtual Tour →
         </button>
+    </div>
+
+    <!-- Scene Transition -->
+    <div class="scene-transition" id="sceneTransition">
+        <div class="transition-content">
+            <div class="transition-spinner"></div>
+            <div class="transition-text" id="transitionText">Loading room...</div>
+        </div>
     </div>
 
     <!-- 360° Panorama Viewer -->
@@ -743,127 +877,72 @@
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" onclick="toggleFullscreen()">
-                <span>⛶</span> Fullscreen
+                <span>⛶</span> <span class="btn-text">Fullscreen</span>
             </button>
             <button class="btn btn-primary" onclick="shareProperty()">
-                <span>📤</span> Share
+                <span>📤</span> <span class="btn-text">Share</span>
             </button>
         </div>
     </div>
 
-    <!-- Room Navigation -->
-    <div class="room-nav">
-        <button class="room-btn active" onclick="loadScene('living')">
-            <div class="room-icon">🛋️</div>
-            <div class="room-label">Living Room</div>
-        </button>
-        <button class="room-btn" onclick="loadScene('kitchen')">
-            <div class="room-icon">👨‍🍳</div>
-            <div class="room-label">Kitchen</div>
-        </button>
-        <button class="room-btn" onclick="loadScene('bedroom')">
-            <div class="room-icon">🛏️</div>
-            <div class="room-label">Master Suite</div>
-        </button>
-        <button class="room-btn" onclick="loadScene('bathroom')">
-            <div class="room-icon">🛁</div>
-            <div class="room-label">Spa Bath</div>
-        </button>
-        <button class="room-btn" onclick="loadScene('terrace')">
-            <div class="room-icon">🌆</div>
-            <div class="room-label">Terrace</div>
-        </button>
+    <!-- Compass -->
+    <div class="compass">
+        <div class="compass-needle" id="compassNeedle">
+            <div class="compass-label n">N</div>
+            <div class="compass-label e">E</div>
+            <div class="compass-label s">S</div>
+            <div class="compass-label w">W</div>
+        </div>
     </div>
 
-    <!-- Property Details Panel -->
-    <div class="details-panel">
-        <div class="details-header">
-            <div class="details-title">The Manhattan Penthouse</div>
-            <div class="details-address">
-                <span>📍</span>
-                <span>432 Park Avenue, Manhattan, NY 10022</span>
-            </div>
-            <div class="details-price">$8,950,000</div>
+    <!-- Minimap -->
+    <div class="minimap-container">
+        <div class="minimap-title">
+            <span>🗺️</span> Floor Plan
         </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">5</div>
-                <div class="stat-label">Bedrooms</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">4.5</div>
-                <div class="stat-label">Bathrooms</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">4,200</div>
-                <div class="stat-label">Sq Ft</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">85th</div>
-                <div class="stat-label">Floor</div>
+        <div class="minimap-canvas" id="minimapCanvas">
+            <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-00-519Z-66c3a7f2-nano-banana-pro_1772087040241.jpg" alt="Floor Plan">
+            <div class="minimap-marker" id="minimapMarker">
+                <div class="minimap-direction" id="minimapDirection"></div>
             </div>
         </div>
+    </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span>📐</span> Floor Plan
-            </div>
-            <div class="floor-plan-preview" onclick="openFloorPlan()">
-                <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-00-519Z-66c3a7f2-nano-banana-pro_1772087040241.jpg" alt="Floor Plan">
-            </div>
+    <!-- Room Gallery -->
+    <div class="room-gallery" id="roomGallery">
+        <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- Info Panel Toggle -->
+    <div class="info-toggle" id="infoToggle" onclick="toggleInfoPanel()">
+        <span style="font-size: 24px;">ℹ️</span>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel" id="infoPanel">
+        <div class="info-header">
+            <div class="info-title" id="roomTitle">Living Room</div>
+            <div class="info-subtitle" id="roomSubtitle">Main entertaining space</div>
         </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span>✨</span> Premium Features
-            </div>
-            <ul class="features-list">
-                <li>360° panoramic city views from every room</li>
-                <li>Floor-to-ceiling windows with 12-foot ceilings</li>
-                <li>Integrated smart home automation system</li>
-                <li>Private elevator with key-locked access</li>
-                <li>2,000 sq ft wraparound terrace with outdoor kitchen</li>
-                <li>Italian Carrara marble flooring throughout</li>
-                <li>Miele and Sub-Zero professional appliances</li>
-                <li>Custom walk-in closets with built-in organization</li>
-                <li>Temperature-controlled wine cellar</li>
-                <li>24/7 white-glove concierge service</li>
+        <div class="info-stats" id="roomStats">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <div class="info-section">
+            <h3 style="font-size: 14px; color: var(--gold); margin-bottom: 15px; font-weight: 700;">Features</h3>
+            <ul class="info-features" id="roomFeatures">
+                <!-- Populated by JavaScript -->
             </ul>
-        </div>
-
-        <div class="section">
-            <div class="section-title">
-                <span>🏗️</span> Building Amenities
-            </div>
-            <ul class="features-list">
-                <li>Private fitness center with personal trainers</li>
-                <li>Full-service spa and wellness center</li>
-                <li>Residents' lounge with catering kitchen</li>
-                <li>Rooftop garden and infinity pool</li>
-                <li>Valet parking and car wash service</li>
-                <li>Pet spa and grooming facilities</li>
-                <li>Private screening room</li>
-                <li>Business center and conference rooms</li>
-            </ul>
-        </div>
-
-        <div class="action-buttons">
-            <button class="action-btn action-btn-primary" onclick="scheduleTour()">
-                📞 Schedule Tour
-            </button>
-            <button class="action-btn action-btn-secondary" onclick="downloadBrochure()">
-                📄 Brochure
-            </button>
         </div>
     </div>
 
     <!-- Controls Guide -->
     <div class="controls">
-        <div class="controls-title">Navigation</div>
+        <div class="controls-title">Controls</div>
         <div class="control-item">
             <span class="control-icon">🖱️</span>
-            <span>Drag to explore 360°</span>
+            <span>Drag to look around</span>
         </div>
         <div class="control-item">
             <span class="control-icon">🔍</span>
@@ -871,89 +950,374 @@
         </div>
         <div class="control-item">
             <span class="control-icon">👆</span>
-            <span>Click rooms below</span>
-        </div>
-    </div>
-
-    <!-- Floor Plan Modal -->
-    <div class="modal" id="floorPlanModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeFloorPlan()">×</button>
-            <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-00-519Z-66c3a7f2-nano-banana-pro_1772087040241.jpg" alt="Detailed Floor Plan">
+            <span>Click hotspots to navigate</span>
         </div>
     </div>
 
     <script>
-        // Real 360° equirectangular panoramas
-        const scenes = {
-            living: 'https://pannellum.org/images/alma.jpg',
-            kitchen: 'https://pannellum.org/images/cerro-toco-0.jpg',
-            bedroom: 'https://pannellum.org/images/jfk.jpg',
-            bathroom: 'https://pannellum.org/images/bma-0.jpg',
-            terrace: 'https://pannellum.org/images/bma-1.jpg'
+        // ==================== CONFIGURATION ====================
+        const SCENES = {
+            living: {
+                name: 'Living Room',
+                subtitle: 'Main entertaining space',
+                panorama: 'https://pannellum.org/images/alma.jpg',
+                thumbnail: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=200&h=200&fit=crop',
+                icon: '🛋️',
+                minimapPosition: { x: 50, y: 50 },
+                stats: [
+                    { label: 'Size', value: '850 sq ft' },
+                    { label: 'Ceiling', value: '12 ft' },
+                    { label: 'Windows', value: '6' },
+                    { label: 'View', value: '360°' }
+                ],
+                features: [
+                    'Floor-to-ceiling windows with Central Park views',
+                    'Italian Carrara marble flooring',
+                    'Integrated smart lighting system',
+                    'Custom built-in entertainment center',
+                    'Gas fireplace with marble surround',
+                    'Motorized window treatments'
+                ],
+                hotspots: [
+                    { pitch: -5, yaw: 90, type: 'scene', target: 'kitchen', icon: '→', tooltip: 'Kitchen' },
+                    { pitch: -5, yaw: -90, type: 'scene', target: 'bedroom', icon: '→', tooltip: 'Master Suite' },
+                    { pitch: -10, yaw: 180, type: 'info', text: 'Central Park View', icon: 'ℹ️' }
+                ]
+            },
+            kitchen: {
+                name: 'Gourmet Kitchen',
+                subtitle: 'Chef-inspired culinary space',
+                panorama: 'https://pannellum.org/images/cerro-toco-0.jpg',
+                thumbnail: 'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=200&h=200&fit=crop',
+                icon: '👨‍🍳',
+                minimapPosition: { x: 75, y: 50 },
+                stats: [
+                    { label: 'Size', value: '450 sq ft' },
+                    { label: 'Island', value: '10 ft' },
+                    { label: 'Appliances', value: 'Pro' },
+                    { label: 'Storage', value: 'Custom' }
+                ],
+                features: [
+                    'Sub-Zero refrigeration and wine storage',
+                    'Miele professional-grade appliances',
+                    'Calacatta marble countertops and backsplash',
+                    'Custom Italian cabinetry with soft-close',
+                    'Large center island with seating for 6',
+                    'Pot filler and filtered water system'
+                ],
+                hotspots: [
+                    { pitch: -5, yaw: -90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' },
+                    { pitch: -5, yaw: 90, type: 'scene', target: 'terrace', icon: '→', tooltip: 'Terrace' },
+                    { pitch: 0, yaw: 0, type: 'info', text: 'Professional Appliances', icon: 'ℹ️' }
+                ]
+            },
+            bedroom: {
+                name: 'Master Suite',
+                subtitle: 'Private sanctuary',
+                panorama: 'https://pannellum.org/images/jfk.jpg',
+                thumbnail: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=200&h=200&fit=crop',
+                icon: '🛏️',
+                minimapPosition: { x: 25, y: 50 },
+                stats: [
+                    { label: 'Size', value: '650 sq ft' },
+                    { label: 'Closets', value: '2' },
+                    { label: 'Bath', value: 'En-suite' },
+                    { label: 'Terrace', value: 'Private' }
+                ],
+                features: [
+                    'King-sized bedroom with sitting area',
+                    'Two walk-in closets with custom organization',
+                    'En-suite spa bathroom with dual vanities',
+                    'Private terrace access',
+                    'Automated blackout shades',
+                    'Integrated sound system'
+                ],
+                hotspots: [
+                    { pitch: -5, yaw: 90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' },
+                    { pitch: -5, yaw: -90, type: 'scene', target: 'bathroom', icon: '→', tooltip: 'Spa Bath' },
+                    { pitch: -8, yaw: 0, type: 'info', text: 'Custom Walk-in Closets', icon: 'ℹ️' }
+                ]
+            },
+            bathroom: {
+                name: 'Spa Bathroom',
+                subtitle: 'Luxury wellness retreat',
+                panorama: 'https://pannellum.org/images/bma-0.jpg',
+                thumbnail: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=200&h=200&fit=crop',
+                icon: '🛁',
+                minimapPosition: { x: 25, y: 75 },
+                stats: [
+                    { label: 'Size', value: '280 sq ft' },
+                    { label: 'Tub', value: 'Soaking' },
+                    { label: 'Shower', value: 'Rain' },
+                    { label: 'Heated', value: 'Floors' }
+                ],
+                features: [
+                    'Freestanding soaking tub with city views',
+                    'Oversized rain shower with body jets',
+                    'Dual vanities with marble countertops',
+                    'Radiant heated marble floors',
+                    'Towel warmers and steam shower',
+                    'Smart mirror with integrated lighting'
+                ],
+                hotspots: [
+                    { pitch: -5, yaw: 180, type: 'scene', target: 'bedroom', icon: '→', tooltip: 'Master Suite' },
+                    { pitch: 0, yaw: 90, type: 'info', text: 'Soaking Tub', icon: 'ℹ️' }
+                ]
+            },
+            terrace: {
+                name: 'Private Terrace',
+                subtitle: 'Outdoor entertaining paradise',
+                panorama: 'https://pannellum.org/images/bma-1.jpg',
+                thumbnail: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop',
+                icon: '🌆',
+                minimapPosition: { x: 75, y: 25 },
+                stats: [
+                    { label: 'Size', value: '2,000 sq ft' },
+                    { label: 'Kitchen', value: 'Outdoor' },
+                    { label: 'Seating', value: '20+' },
+                    { label: 'Views', value: '360°' }
+                ],
+                features: [
+                    'Wraparound terrace with panoramic views',
+                    'Outdoor kitchen with grill and refrigeration',
+                    'Multiple seating and dining areas',
+                    'Integrated irrigation system',
+                    'Weather-resistant power outlets',
+                    'Ambient lighting and heating'
+                ],
+                hotspots: [
+                    { pitch: -5, yaw: -90, type: 'scene', target: 'kitchen', icon: '→', tooltip: 'Kitchen' },
+                    { pitch: -5, yaw: 90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' },
+                    { pitch: -15, yaw: 0, type: 'info', text: 'Skyline Views', icon: 'ℹ️' }
+                ]
+            }
         };
 
-        let viewer;
+        // ==================== STATE ====================
+        let viewer = null;
         let currentScene = 'living';
         let tourStarted = false;
+        let infoPanelCollapsed = false;
 
+        // ==================== INITIALIZATION ====================
+        
         // Loading progress simulation
         let progress = 0;
         const loadingInterval = setInterval(() => {
-            progress += Math.random() * 20;
+            progress += Math.random() * 15;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(loadingInterval);
                 document.getElementById('loadingStatus').textContent = 'Ready to explore...';
             }
             document.getElementById('loadingProgress').style.width = progress + '%';
-        }, 150);
+        }, 120);
 
-        // Manual enter tour function
+        // Enter tour
         window.enterTour = function() {
             if (!tourStarted) {
                 tourStarted = true;
                 document.getElementById('loading').classList.add('hidden');
                 initViewer();
+                initRoomGallery();
             }
         };
 
         // Initialize panorama viewer
         function initViewer() {
+            const scene = SCENES[currentScene];
+            
             viewer = pannellum.viewer('panorama', {
                 type: 'equirectangular',
-                panorama: scenes[currentScene],
+                panorama: scene.panorama,
                 autoLoad: true,
                 showControls: false,
                 mouseZoom: true,
                 autoRotate: -2,
-                autoRotateInactivityDelay: 5000,
+                autoRotateInactivityDelay: 3000,
                 hfov: 100,
                 pitch: 0,
                 yaw: 0,
                 minHfov: 50,
                 maxHfov: 120,
-                friction: 0.15
+                friction: 0.15,
+                hotSpots: createHotspots(scene.hotspots)
+            });
+
+            // Update compass on view change
+            viewer.on('mouseup', updateCompass);
+            viewer.on('touchend', updateCompass);
+            
+            updateRoomInfo(currentScene);
+            updateMinimap(currentScene);
+        }
+
+        // Create hotspots
+        function createHotspots(hotspots) {
+            return hotspots.map(spot => {
+                const config = {
+                    pitch: spot.pitch,
+                    yaw: spot.yaw,
+                    cssClass: spot.type === 'scene' ? 'hotspot-nav' : 'hotspot-info',
+                    createTooltipFunc: (hotSpotDiv) => {
+                        hotSpotDiv.innerHTML = `<span class="hotspot-${spot.type}">${spot.icon}</span>`;
+                        if (spot.tooltip) {
+                            hotSpotDiv.title = spot.tooltip;
+                        }
+                    }
+                };
+
+                if (spot.type === 'scene') {
+                    config.clickHandlerFunc = () => loadScene(spot.target);
+                } else if (spot.type === 'info') {
+                    config.clickHandlerFunc = () => showInfo(spot.text);
+                }
+
+                return config;
             });
         }
 
-        // Load different scene
+        // Load scene with transition
         window.loadScene = function(sceneName) {
-            if (!viewer) return;
-            
-            currentScene = sceneName;
-            
-            // Update active button
-            document.querySelectorAll('.room-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.closest('.room-btn').classList.add('active');
-            
-            // Load new panorama
-            viewer.loadScene(scenes[sceneName]);
+            if (!viewer || sceneName === currentScene) return;
+
+            const scene = SCENES[sceneName];
+            const transition = document.getElementById('sceneTransition');
+            const transitionText = document.getElementById('transitionText');
+
+            // Show transition
+            transitionText.textContent = `Loading ${scene.name}...`;
+            transition.classList.add('active');
+
+            // Update scene after delay
+            setTimeout(() => {
+                currentScene = sceneName;
+                
+                // Update panorama
+                viewer.loadScene(scene.panorama, scene.pitch || 0, scene.yaw || 0, scene.hfov || 100);
+                
+                // Update hotspots
+                viewer.removeAllHotSpots();
+                scene.hotspots.forEach(spot => {
+                    const config = {
+                        pitch: spot.pitch,
+                        yaw: spot.yaw,
+                        cssClass: spot.type === 'scene' ? 'hotspot-nav' : 'hotspot-info',
+                        createTooltipFunc: (hotSpotDiv) => {
+                            hotSpotDiv.innerHTML = `<span class="hotspot-${spot.type}">${spot.icon}</span>`;
+                            if (spot.tooltip) {
+                                hotSpotDiv.title = spot.tooltip;
+                            }
+                        }
+                    };
+
+                    if (spot.type === 'scene') {
+                        config.clickHandlerFunc = () => loadScene(spot.target);
+                    } else if (spot.type === 'info') {
+                        config.clickHandlerFunc = () => showInfo(spot.text);
+                    }
+
+                    viewer.addHotSpot(config);
+                });
+
+                // Update UI
+                updateRoomInfo(sceneName);
+                updateMinimap(sceneName);
+                updateRoomGallery(sceneName);
+
+                // Hide transition
+                setTimeout(() => {
+                    transition.classList.remove('active');
+                }, 300);
+            }, 400);
         };
 
-        // UI Functions
+        // Initialize room gallery
+        function initRoomGallery() {
+            const gallery = document.getElementById('roomGallery');
+            gallery.innerHTML = '';
+
+            Object.keys(SCENES).forEach(sceneKey => {
+                const scene = SCENES[sceneKey];
+                const thumb = document.createElement('div');
+                thumb.className = `room-thumb ${sceneKey === currentScene ? 'active' : ''}`;
+                thumb.onclick = () => loadScene(sceneKey);
+                thumb.innerHTML = `
+                    <img src="${scene.thumbnail}" alt="${scene.name}">
+                    <div class="room-thumb-icon">${scene.icon}</div>
+                    <div class="room-thumb-label">${scene.name.split(' ')[0]}</div>
+                `;
+                gallery.appendChild(thumb);
+            });
+        }
+
+        // Update room gallery active state
+        function updateRoomGallery(sceneName) {
+            document.querySelectorAll('.room-thumb').forEach((thumb, index) => {
+                const sceneKey = Object.keys(SCENES)[index];
+                thumb.classList.toggle('active', sceneKey === sceneName);
+            });
+        }
+
+        // Update room info panel
+        function updateRoomInfo(sceneName) {
+            const scene = SCENES[sceneName];
+            
+            document.getElementById('roomTitle').textContent = scene.name;
+            document.getElementById('roomSubtitle').textContent = scene.subtitle;
+
+            // Update stats
+            const statsContainer = document.getElementById('roomStats');
+            statsContainer.innerHTML = scene.stats.map(stat => `
+                <div class="info-stat">
+                    <div class="info-stat-value">${stat.value}</div>
+                    <div class="info-stat-label">${stat.label}</div>
+                </div>
+            `).join('');
+
+            // Update features
+            const featuresContainer = document.getElementById('roomFeatures');
+            featuresContainer.innerHTML = scene.features.map(feature => `
+                <li>${feature}</li>
+            `).join('');
+        }
+
+        // Update minimap
+        function updateMinimap(sceneName) {
+            const scene = SCENES[sceneName];
+            const marker = document.getElementById('minimapMarker');
+            
+            marker.style.left = scene.minimapPosition.x + '%';
+            marker.style.top = scene.minimapPosition.y + '%';
+        }
+
+        // Update compass
+        function updateCompass() {
+            if (!viewer) return;
+            const yaw = viewer.getYaw();
+            const needle = document.getElementById('compassNeedle');
+            needle.style.transform = `rotate(${yaw}deg)`;
+            
+            // Update minimap direction
+            const direction = document.getElementById('minimapDirection');
+            direction.style.transform = `translate(-50%, -50%) rotate(${yaw}deg)`;
+        }
+
+        // Show info
+        function showInfo(text) {
+            alert(`ℹ️ ${text}\n\nThis is an interactive information hotspot. In a production version, this would show a beautiful modal with detailed information, images, and specifications.`);
+        }
+
+        // Toggle info panel
+        window.toggleInfoPanel = function() {
+            infoPanelCollapsed = !infoPanelCollapsed;
+            document.getElementById('infoPanel').classList.toggle('collapsed', infoPanelCollapsed);
+            document.getElementById('infoToggle').innerHTML = infoPanelCollapsed 
+                ? '<span style="font-size: 24px;">ℹ️</span>' 
+                : '<span style="font-size: 24px;">✕</span>';
+        };
+
+        // Fullscreen
         window.toggleFullscreen = function() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
@@ -962,55 +1326,39 @@
             }
         };
 
+        // Share
         window.shareProperty = function() {
+            const url = `${window.location.href}?room=${currentScene}`;
             if (navigator.share) {
                 navigator.share({
-                    title: 'The Manhattan Penthouse - $8.95M',
-                    text: 'Explore this stunning 4,200 sq ft luxury penthouse with 360° virtual tour!',
-                    url: window.location.href
+                    title: `${SCENES[currentScene].name} - The Manhattan Penthouse`,
+                    text: 'Explore this stunning luxury penthouse with 360° virtual tour!',
+                    url: url
                 });
             } else {
-                const url = window.location.href;
                 navigator.clipboard.writeText(url);
-                alert('🔗 Link Copied!\n\nShare this exclusive property:\n' + url);
+                alert(`🔗 Link Copied!\n\nDirect link to ${SCENES[currentScene].name}:\n${url}`);
             }
         };
 
-        window.scheduleTour = function() {
-            alert('📞 Schedule Your Private Tour\n\n' +
-                  'Thank you for your interest in The Manhattan Penthouse!\n\n' +
-                  'Our luxury property specialist will contact you within 2 hours to arrange a private viewing at your convenience.\n\n' +
-                  '☎️  Direct: (212) 555-LUXURY\n' +
-                  '✉️  Email: concierge@prestigeestates.com\n\n' +
-                  'Available 7 days a week, 9 AM - 9 PM EST');
-        };
-
-        window.downloadBrochure = function() {
-            alert('📄 Property Brochure\n\n' +
-                  'A comprehensive PDF brochure will be sent to your email including:\n\n' +
-                  '• High-resolution photography\n' +
-                  '• Detailed floor plans\n' +
-                  '• Complete specifications\n' +
-                  '• Building amenities\n' +
-                  '• Neighborhood information\n' +
-                  '• Financing options\n\n' +
-                  'Please provide your email address to receive the brochure.');
-        };
-
-        window.openFloorPlan = function() {
-            document.getElementById('floorPlanModal').classList.add('active');
-        };
-
-        window.closeFloorPlan = function() {
-            document.getElementById('floorPlanModal').classList.remove('active');
-        };
-
-        // Close modal on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeFloorPlan();
+        // Check for room parameter in URL
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            const room = params.get('room');
+            if (room && SCENES[room]) {
+                currentScene = room;
             }
         });
+
+        // Gyroscope support for mobile
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (event) => {
+                if (viewer && tourStarted) {
+                    // This would integrate device orientation with the viewer
+                    // Implementation depends on specific requirements
+                }
+            });
+        }
     </script>
 </body>
 </html>
