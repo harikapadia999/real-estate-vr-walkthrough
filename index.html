@@ -101,6 +101,7 @@
             border-radius: 2px;
             overflow: hidden;
             position: relative;
+            margin-bottom: 30px;
         }
 
         .loading-progress {
@@ -112,10 +113,39 @@
         }
 
         .loading-status {
-            margin-top: 20px;
+            margin-bottom: 40px;
             font-size: 13px;
             color: rgba(255,255,255,0.5);
             font-weight: 300;
+        }
+
+        .enter-btn {
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 10px 40px rgba(201, 169, 97, 0.4);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInButton 0.5s ease 2s forwards;
+        }
+
+        @keyframes fadeInButton {
+            to { opacity: 1; }
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(201, 169, 97, 0.6);
+        }
+
+        .enter-btn:active {
+            transform: translateY(-1px);
         }
 
         /* Header */
@@ -669,6 +699,14 @@
                 padding: 10px 18px;
                 font-size: 12px;
             }
+
+            .loading-title {
+                font-size: 36px;
+            }
+
+            .loading-bar {
+                width: 300px;
+            }
         }
     </style>
 </head>
@@ -681,7 +719,10 @@
         <div class="loading-bar">
             <div class="loading-progress" id="loadingProgress"></div>
         </div>
-        <div class="loading-status" id="loadingStatus">Initializing Virtual Tour...</div>
+        <div class="loading-status" id="loadingStatus">Ready to explore...</div>
+        <button class="enter-btn" id="enterBtn" onclick="enterTour()">
+            Enter Virtual Tour →
+        </button>
     </div>
 
     <!-- 360° Panorama Viewer -->
@@ -843,7 +884,7 @@
     </div>
 
     <script>
-        // Real 360° equirectangular panoramas from reliable CDN
+        // Real 360° equirectangular panoramas
         const scenes = {
             living: 'https://pannellum.org/images/alma.jpg',
             kitchen: 'https://pannellum.org/images/cerro-toco-0.jpg',
@@ -854,6 +895,28 @@
 
         let viewer;
         let currentScene = 'living';
+        let tourStarted = false;
+
+        // Loading progress simulation
+        let progress = 0;
+        const loadingInterval = setInterval(() => {
+            progress += Math.random() * 20;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(loadingInterval);
+                document.getElementById('loadingStatus').textContent = 'Ready to explore...';
+            }
+            document.getElementById('loadingProgress').style.width = progress + '%';
+        }, 150);
+
+        // Manual enter tour function
+        window.enterTour = function() {
+            if (!tourStarted) {
+                tourStarted = true;
+                document.getElementById('loading').classList.add('hidden');
+                initViewer();
+            }
+        };
 
         // Initialize panorama viewer
         function initViewer() {
@@ -870,17 +933,14 @@
                 yaw: 0,
                 minHfov: 50,
                 maxHfov: 120,
-                friction: 0.15,
-                onLoad: function() {
-                    setTimeout(() => {
-                        document.getElementById('loading').classList.add('hidden');
-                    }, 800);
-                }
+                friction: 0.15
             });
         }
 
         // Load different scene
         window.loadScene = function(sceneName) {
+            if (!viewer) return;
+            
             currentScene = sceneName;
             
             // Update active button
@@ -889,7 +949,7 @@
             });
             event.target.closest('.room-btn').classList.add('active');
             
-            // Load new panorama with smooth transition
+            // Load new panorama
             viewer.loadScene(scenes[sceneName]);
         };
 
@@ -944,35 +1004,6 @@
         window.closeFloorPlan = function() {
             document.getElementById('floorPlanModal').classList.remove('active');
         };
-
-        // Loading progress simulation
-        let progress = 0;
-        const statusMessages = [
-            'Initializing Virtual Tour...',
-            'Loading 360° Panoramas...',
-            'Rendering High-Resolution Images...',
-            'Preparing Interactive Features...',
-            'Almost Ready...'
-        ];
-        let statusIndex = 0;
-
-        const loadingInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(loadingInterval);
-                document.getElementById('loadingStatus').textContent = 'Welcome to The Manhattan Penthouse';
-            } else {
-                if (progress > statusIndex * 20 && statusIndex < statusMessages.length - 1) {
-                    statusIndex++;
-                    document.getElementById('loadingStatus').textContent = statusMessages[statusIndex];
-                }
-            }
-            document.getElementById('loadingProgress').style.width = progress + '%';
-        }, 200);
-
-        // Initialize on load
-        window.addEventListener('load', initViewer);
 
         // Close modal on escape key
         document.addEventListener('keydown', function(e) {
