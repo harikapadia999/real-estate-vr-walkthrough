@@ -6,11 +6,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>The Manhattan Penthouse | Professional VR Tour</title>
-    <meta name="description" content="Immersive 360° virtual tour with interactive hotspots, minimap navigation, and professional features">
+    <meta name="description" content="Immersive 360° virtual tour with interactive hotspots, minimap navigation, measurement tools, and professional features">
     
     <!-- Pannellum 360° Viewer -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    
+    <!-- Advanced Features Module -->
+    <script src="advanced-features.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -283,7 +286,7 @@
         .minimap-container {
             position: fixed;
             bottom: 30px;
-            left: 30px;
+            left: 140px;
             width: 280px;
             background: var(--glass);
             backdrop-filter: blur(30px);
@@ -660,42 +663,6 @@
             flex-shrink: 0;
         }
 
-        /* ==================== CONTROLS GUIDE ==================== */
-        .controls {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            padding: 20px 25px;
-            border-radius: 15px;
-            box-shadow: var(--shadow), 0 0 0 1px var(--border);
-            z-index: 1000;
-            animation: fadeIn 1s ease 0.9s both;
-        }
-
-        .controls-title {
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .control-item {
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .control-icon {
-            font-size: 16px;
-        }
-
         /* ==================== SCENE TRANSITION ==================== */
         .scene-transition {
             position: fixed;
@@ -742,6 +709,21 @@
             font-weight: 600;
         }
 
+        /* Scrollbar */
+        .info-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-panel::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+
+        .info-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border-radius: 3px;
+        }
+
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 1024px) {
             .info-panel {
@@ -750,6 +732,7 @@
             
             .minimap-container {
                 width: 240px;
+                left: 120px;
             }
         }
 
@@ -807,10 +790,6 @@
                 right: 20px;
             }
 
-            .controls {
-                display: none;
-            }
-
             .loading-title {
                 font-size: 36px;
             }
@@ -818,21 +797,6 @@
             .loading-bar {
                 width: 280px;
             }
-        }
-
-        /* Scrollbar */
-        .info-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .info-panel::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 3px;
-        }
-
-        .info-panel::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-radius: 3px;
         }
     </style>
 </head>
@@ -937,22 +901,16 @@
         </div>
     </div>
 
-    <!-- Controls Guide -->
-    <div class="controls">
-        <div class="controls-title">Controls</div>
-        <div class="control-item">
-            <span class="control-icon">🖱️</span>
-            <span>Drag to look around</span>
-        </div>
-        <div class="control-item">
-            <span class="control-icon">🔍</span>
-            <span>Scroll to zoom</span>
-        </div>
-        <div class="control-item">
-            <span class="control-icon">👆</span>
-            <span>Click hotspots to navigate</span>
-        </div>
-    </div>
+    <!-- Load Toolbar -->
+    <script>
+        fetch('toolbar.html')
+            .then(response => response.text())
+            .then(html => {
+                const div = document.createElement('div');
+                div.innerHTML = html;
+                document.body.appendChild(div);
+            });
+    </script>
 
     <script>
         // ==================== CONFIGURATION ====================
@@ -1098,6 +1056,7 @@
         let currentScene = 'living';
         let tourStarted = false;
         let infoPanelCollapsed = false;
+        let advancedFeatures = null;
 
         // ==================== INITIALIZATION ====================
         
@@ -1120,8 +1079,18 @@
                 document.getElementById('loading').classList.add('hidden');
                 initViewer();
                 initRoomGallery();
+                initAdvancedFeatures();
             }
         };
+
+        // Initialize advanced features
+        function initAdvancedFeatures() {
+            if (window.VRTourAdvanced) {
+                advancedFeatures = new VRTourAdvanced(viewer);
+                advancedFeatures.trackRoomVisit(currentScene);
+                window.advancedFeatures = advancedFeatures;
+            }
+        }
 
         // Initialize panorama viewer
         function initViewer() {
@@ -1168,9 +1137,19 @@
                 };
 
                 if (spot.type === 'scene') {
-                    config.clickHandlerFunc = () => loadScene(spot.target);
+                    config.clickHandlerFunc = () => {
+                        loadScene(spot.target);
+                        if (advancedFeatures) {
+                            advancedFeatures.trackHotspotClick('navigation', spot.target);
+                        }
+                    };
                 } else if (spot.type === 'info') {
-                    config.clickHandlerFunc = () => showInfo(spot.text);
+                    config.clickHandlerFunc = () => {
+                        showInfo(spot.text);
+                        if (advancedFeatures) {
+                            advancedFeatures.trackHotspotClick('info', spot.text);
+                        }
+                    };
                 }
 
                 return config;
@@ -1188,6 +1167,11 @@
             // Show transition
             transitionText.textContent = `Loading ${scene.name}...`;
             transition.classList.add('active');
+
+            // Track analytics
+            if (advancedFeatures) {
+                advancedFeatures.trackRoomVisit(sceneName);
+            }
 
             // Update scene after delay
             setTimeout(() => {
@@ -1212,9 +1196,19 @@
                     };
 
                     if (spot.type === 'scene') {
-                        config.clickHandlerFunc = () => loadScene(spot.target);
+                        config.clickHandlerFunc = () => {
+                            loadScene(spot.target);
+                            if (advancedFeatures) {
+                                advancedFeatures.trackHotspotClick('navigation', spot.target);
+                            }
+                        };
                     } else if (spot.type === 'info') {
-                        config.clickHandlerFunc = () => showInfo(spot.text);
+                        config.clickHandlerFunc = () => {
+                            showInfo(spot.text);
+                            if (advancedFeatures) {
+                                advancedFeatures.trackHotspotClick('info', spot.text);
+                            }
+                        };
                     }
 
                     viewer.addHotSpot(config);
@@ -1350,15 +1344,13 @@
             }
         });
 
-        // Gyroscope support for mobile
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', (event) => {
-                if (viewer && tourStarted) {
-                    // This would integrate device orientation with the viewer
-                    // Implementation depends on specific requirements
-                }
-            });
-        }
+        // Track page unload
+        window.addEventListener('beforeunload', () => {
+            if (advancedFeatures) {
+                const summary = advancedFeatures.getAnalyticsSummary();
+                console.log('📊 Final Tour Analytics:', summary);
+            }
+        });
     </script>
 </body>
 </html>
