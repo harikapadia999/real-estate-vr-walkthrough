@@ -725,11 +725,12 @@
 
     <script>
         // ==================== CONFIGURATION ====================
+        // Using CORS-friendly, reliable 360° images
         const SCENES = {
             living: {
                 name: 'Living Room',
                 subtitle: 'Main entertaining space',
-                panorama: 'https://pannellum.org/images/alma.jpg',
+                panorama: 'https://cdn.pannellum.org/2.5/images/alma.jpg',
                 thumbnail: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=200&h=200&fit=crop',
                 icon: '🛋️',
                 minimapPosition: { x: 50, y: 50 },
@@ -755,7 +756,7 @@
             kitchen: {
                 name: 'Gourmet Kitchen',
                 subtitle: 'Chef-inspired culinary space',
-                panorama: 'https://pannellum.org/images/cerro-toco-0.jpg',
+                panorama: 'https://cdn.pannellum.org/2.5/images/cerro-toco-0.jpg',
                 thumbnail: 'https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=200&h=200&fit=crop',
                 icon: '👨‍🍳',
                 minimapPosition: { x: 75, y: 50 },
@@ -781,7 +782,7 @@
             bedroom: {
                 name: 'Master Suite',
                 subtitle: 'Private sanctuary',
-                panorama: 'https://pannellum.org/images/jfk.jpg',
+                panorama: 'https://cdn.pannellum.org/2.5/images/jfk.jpg',
                 thumbnail: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=200&h=200&fit=crop',
                 icon: '🛏️',
                 minimapPosition: { x: 25, y: 50 },
@@ -807,7 +808,7 @@
             bathroom: {
                 name: 'Spa Bathroom',
                 subtitle: 'Luxury wellness retreat',
-                panorama: 'https://pannellum.org/images/bma-0.jpg',
+                panorama: 'https://cdn.pannellum.org/2.5/images/bma-0.jpg',
                 thumbnail: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=200&h=200&fit=crop',
                 icon: '🛁',
                 minimapPosition: { x: 25, y: 75 },
@@ -832,7 +833,7 @@
             terrace: {
                 name: 'Private Terrace',
                 subtitle: 'Outdoor entertaining paradise',
-                panorama: 'https://pannellum.org/images/bma-1.jpg',
+                panorama: 'https://cdn.pannellum.org/2.5/images/bma-1.jpg',
                 thumbnail: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=200&h=200&fit=crop',
                 icon: '🌆',
                 minimapPosition: { x: 75, y: 25 },
@@ -868,13 +869,16 @@
             setTimeout(() => {
                 initViewer();
                 initRoomGallery();
-            }, 100);
+            }, 800);
         }
 
         function initViewer() {
+            const scene = SCENES[currentScene];
+            
+            console.log('Initializing viewer with scene:', currentScene);
+            console.log('Panorama URL:', scene.panorama);
+            
             try {
-                const scene = SCENES[currentScene];
-                
                 viewer = pannellum.viewer('panorama', {
                     type: 'equirectangular',
                     panorama: scene.panorama,
@@ -888,16 +892,17 @@
                     yaw: 0,
                     minHfov: 50,
                     maxHfov: 120,
+                    crossOrigin: 'anonymous',
                     hotSpots: createHotspots(scene.hotspots)
                 });
 
                 viewer.on('load', () => {
-                    console.log('Panorama loaded successfully');
+                    console.log('✅ Panorama loaded successfully');
                 });
 
                 viewer.on('error', (err) => {
-                    console.error('Panorama error:', err);
-                    alert('Error loading panorama. Please refresh the page.');
+                    console.error('❌ Panorama error:', err);
+                    alert('Error loading panorama. Using CDN images. Please check your internet connection.');
                 });
 
                 viewer.on('mouseup', updateCompass);
@@ -906,8 +911,8 @@
                 updateRoomInfo(currentScene);
                 updateMinimap(currentScene);
             } catch (error) {
-                console.error('Viewer initialization error:', error);
-                alert('Error initializing VR tour. Please refresh the page.');
+                console.error('❌ Viewer initialization error:', error);
+                alert('Error initializing VR tour: ' + error.message);
             }
         }
 
@@ -930,36 +935,58 @@
             const scene = SCENES[sceneName];
             const transition = document.getElementById('sceneTransition');
             
+            console.log('Loading scene:', sceneName);
+            
             document.getElementById('transitionText').textContent = `Loading ${scene.name}...`;
             transition.classList.add('active');
 
             setTimeout(() => {
                 try {
                     currentScene = sceneName;
-                    viewer.loadScene(scene.panorama, 0, 0, 100);
-                    viewer.removeAllHotSpots();
-                    scene.hotspots.forEach(spot => {
-                        viewer.addHotSpot({
-                            pitch: spot.pitch,
-                            yaw: spot.yaw,
-                            cssClass: 'hotspot-nav',
-                            createTooltipFunc: (div) => {
-                                div.innerHTML = `<span>${spot.icon}</span>`;
-                                div.title = spot.tooltip;
-                            },
-                            clickHandlerFunc: () => loadScene(spot.target)
-                        });
+                    
+                    // Destroy and recreate viewer for better compatibility
+                    if (viewer) {
+                        viewer.destroy();
+                    }
+                    
+                    viewer = pannellum.viewer('panorama', {
+                        type: 'equirectangular',
+                        panorama: scene.panorama,
+                        autoLoad: true,
+                        showControls: false,
+                        mouseZoom: true,
+                        autoRotate: -2,
+                        autoRotateInactivityDelay: 3000,
+                        hfov: 100,
+                        pitch: 0,
+                        yaw: 0,
+                        minHfov: 50,
+                        maxHfov: 120,
+                        crossOrigin: 'anonymous',
+                        hotSpots: createHotspots(scene.hotspots)
                     });
+
+                    viewer.on('load', () => {
+                        console.log('✅ Scene loaded:', sceneName);
+                        setTimeout(() => transition.classList.remove('active'), 300);
+                    });
+
+                    viewer.on('error', (err) => {
+                        console.error('❌ Scene error:', err);
+                        transition.classList.remove('active');
+                        alert('Error loading room. Please try again.');
+                    });
+
+                    viewer.on('mouseup', updateCompass);
+                    viewer.on('touchend', updateCompass);
 
                     updateRoomInfo(sceneName);
                     updateMinimap(sceneName);
                     updateRoomGallery(sceneName);
-
-                    setTimeout(() => transition.classList.remove('active'), 300);
                 } catch (error) {
-                    console.error('Scene loading error:', error);
+                    console.error('❌ Scene loading error:', error);
                     transition.classList.remove('active');
-                    alert('Error loading room. Please try again.');
+                    alert('Error loading room: ' + error.message);
                 }
             }, 400);
         }
@@ -1049,7 +1076,7 @@
                     alert(`Link copied: ${url}`);
                 }).catch(err => {
                     console.error('Clipboard error:', err);
-                    alert(`Share this link: ${url}`);
+                    prompt('Copy this link:', url);
                 });
             }
         }
@@ -1064,6 +1091,10 @@
         // Error handling
         window.addEventListener('error', (e) => {
             console.error('Global error:', e.error);
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('Unhandled promise rejection:', e.reason);
         });
     </script>
 </body>
