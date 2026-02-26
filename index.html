@@ -55,6 +55,15 @@
         .loading-logo {
             width: 120px;
             height: 120px;
+            background: linear-gradient(135deg, #C9A961 0%, #F4E4C1 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 900;
+            color: #000;
+            font-family: 'Playfair Display', serif;
             margin-bottom: 40px;
             animation: pulse 2s ease-in-out infinite;
         }
@@ -666,7 +675,7 @@
 <body>
     <!-- Loading Screen -->
     <div class="loading-screen" id="loading">
-        <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-21-862Z-58cabdb6-nano-banana-pro_1772087061764.jpg" alt="Logo" class="loading-logo">
+        <div class="loading-logo">PE</div>
         <div class="loading-title">THE MANHATTAN</div>
         <div class="loading-subtitle">Penthouse Collection</div>
         <div class="loading-bar">
@@ -834,13 +843,13 @@
     </div>
 
     <script>
-        // Custom-generated 360° panorama images
+        // Real 360° equirectangular panoramas from reliable CDN
         const scenes = {
-            living: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-16-18-735Z-096f2166-nano-banana-pro_1772086578547.jpg',
-            kitchen: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-16-42-878Z-c2d030cf-nano-banana-pro_1772086602741.jpg',
-            bedroom: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-17-05-092Z-534f9d26-nano-banana-pro_1772086624893.jpg',
-            bathroom: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-17-31-429Z-fcfa8c60-nano-banana-pro_1772086651290.jpg',
-            terrace: 'https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-17-53-954Z-510c87ed-nano-banana-pro_1772086673797.jpg'
+            living: 'https://pannellum.org/images/alma.jpg',
+            kitchen: 'https://pannellum.org/images/cerro-toco-0.jpg',
+            bedroom: 'https://pannellum.org/images/jfk.jpg',
+            bathroom: 'https://pannellum.org/images/bma-0.jpg',
+            terrace: 'https://pannellum.org/images/bma-1.jpg'
         };
 
         let viewer;
