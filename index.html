@@ -4,19 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
     <title>The Manhattan Penthouse | Professional VR Tour</title>
-    <meta name="description" content="Immersive 360° virtual tour with interactive hotspots, minimap navigation, measurement tools, and professional features">
     
     <!-- Pannellum 360° Viewer -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     
-    <!-- Advanced Features Module -->
-    <script src="advanced-features.js"></script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
         
         * {
             margin: 0;
@@ -29,132 +24,84 @@
             --gold-light: #F4E4C1;
             --dark: #0f0c29;
             --glass: rgba(0,0,0,0.85);
-            --glass-light: rgba(0,0,0,0.6);
-            --border: rgba(201, 169, 97, 0.3);
-            --shadow: 0 20px 60px rgba(0,0,0,0.9);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
             background: #000;
             color: #fff;
-            -webkit-font-smoothing: antialiased;
         }
 
         #panorama {
             width: 100vw;
             height: 100vh;
-            position: relative;
         }
 
-        /* ==================== LOADING SCREEN ==================== */
+        /* ==================== LOADING ==================== */
         .loading-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             z-index: 10000;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            transition: opacity 0.8s;
         }
 
         .loading-screen.hidden {
             opacity: 0;
-            visibility: hidden;
             pointer-events: none;
         }
 
         .loading-logo {
             width: 120px;
             height: 120px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            font-weight: 900;
+            font: 800 48px 'Playfair Display', serif;
             color: #000;
-            font-family: 'Playfair Display', serif;
             margin-bottom: 40px;
-            animation: pulse 2s ease-in-out infinite;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.9; }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .loading-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 52px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            font: 800 52px 'Playfair Display', serif;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 15px;
             letter-spacing: 4px;
-            text-align: center;
         }
 
         .loading-subtitle {
             font-size: 16px;
             color: rgba(255,255,255,0.7);
             margin-bottom: 50px;
-            font-weight: 300;
             letter-spacing: 3px;
             text-transform: uppercase;
         }
 
-        .loading-bar {
-            width: 400px;
-            height: 3px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .loading-progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold), var(--gold-light));
-            width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 20px rgba(201, 169, 97, 0.6);
-        }
-
-        .loading-status {
-            margin-bottom: 40px;
-            font-size: 13px;
-            color: rgba(255,255,255,0.5);
-            font-weight: 300;
-        }
-
         .enter-btn {
             padding: 18px 50px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             color: #000;
             border: none;
             border-radius: 50px;
-            font-size: 16px;
-            font-weight: 700;
+            font: 700 16px 'Inter', sans-serif;
             cursor: pointer;
-            font-family: 'Inter', sans-serif;
             box-shadow: 0 10px 40px rgba(201, 169, 97, 0.4);
-            transition: all 0.3s ease;
-            opacity: 0;
-            animation: fadeInButton 0.5s ease 1.5s forwards;
-        }
-
-        @keyframes fadeInButton {
-            to { opacity: 1; }
+            transition: all 0.3s;
         }
 
         .enter-btn:hover {
@@ -169,18 +116,17 @@
             left: 0;
             right: 0;
             padding: 20px 40px;
-            background: linear-gradient(180deg, var(--glass) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(180deg, var(--glass), transparent);
             backdrop-filter: blur(20px);
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            animation: slideDown 1s ease;
+            animation: slideDown 1s;
         }
 
         @keyframes slideDown {
             from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
         }
 
         .brand {
@@ -192,76 +138,45 @@
         .brand-logo {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: 800;
+            font: 800 24px 'Playfair Display', serif;
             color: #000;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
         }
 
         .brand-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            font-weight: 700;
+            font: 700 18px 'Playfair Display', serif;
             letter-spacing: 2px;
             color: var(--gold);
         }
 
-        .brand-tagline {
-            font-size: 10px;
-            color: rgba(255,255,255,0.5);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .property-header {
-            text-align: center;
-        }
-
         .property-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font: 700 24px 'Playfair Display', serif;
             letter-spacing: 1px;
         }
 
         .property-location {
             font-size: 12px;
             color: rgba(255,255,255,0.6);
-            font-weight: 400;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
         }
 
         .btn {
             padding: 10px 20px;
             border: none;
             border-radius: 50px;
-            font-size: 12px;
-            font-weight: 600;
+            font: 600 12px 'Inter', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             color: #000;
             box-shadow: 0 4px 15px rgba(201, 169, 97, 0.3);
         }
@@ -275,7 +190,6 @@
             background: rgba(255,255,255,0.1);
             color: white;
             border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
@@ -283,32 +197,30 @@
         }
 
         /* ==================== MINIMAP ==================== */
-        .minimap-container {
+        .minimap {
             position: fixed;
             bottom: 30px;
-            left: 140px;
+            left: 30px;
             width: 280px;
             background: var(--glass);
             backdrop-filter: blur(30px);
             border-radius: 20px;
             padding: 20px;
-            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.3);
             z-index: 1000;
-            animation: slideInLeft 1s ease 0.5s both;
+            animation: slideInLeft 1s 0.5s both;
         }
 
         @keyframes slideInLeft {
             from { transform: translateX(-400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
 
         .minimap-title {
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 15px;
+            font: 700 12px 'Inter', sans-serif;
             color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 2px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -321,7 +233,7 @@
             border-radius: 12px;
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(201, 169, 97, 0.3);
         }
 
         .minimap-canvas img {
@@ -340,7 +252,7 @@
             border-radius: 50%;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 20px rgba(201, 169, 97, 0.8);
-            animation: markerPulse 2s ease-in-out infinite;
+            animation: markerPulse 2s infinite;
             z-index: 10;
         }
 
@@ -370,24 +282,23 @@
             background: var(--glass);
             backdrop-filter: blur(30px);
             border-radius: 50%;
-            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            animation: fadeIn 1s ease 0.7s both;
+            animation: fadeIn 1s 0.7s both;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .compass-needle {
             width: 60px;
             height: 60px;
             position: relative;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
 
         .compass-needle::before {
@@ -418,8 +329,7 @@
 
         .compass-label {
             position: absolute;
-            font-size: 10px;
-            font-weight: 700;
+            font: 700 10px 'Inter', sans-serif;
             color: var(--gold);
         }
 
@@ -440,9 +350,9 @@
             border-radius: 100px;
             display: flex;
             gap: 12px;
-            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.3);
             z-index: 1000;
-            animation: slideUp 1s ease 0.3s both;
+            animation: slideUp 1s 0.3s both;
         }
 
         @keyframes slideUp {
@@ -484,10 +394,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(0deg, rgba(0,0,0,0.9), transparent);
             padding: 8px 6px 6px;
-            font-size: 9px;
-            font-weight: 700;
+            font: 700 9px 'Inter', sans-serif;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -505,16 +414,16 @@
         .pnlm-hotspot {
             width: 60px !important;
             height: 60px !important;
-            background: radial-gradient(circle, rgba(201, 169, 97, 0.9) 0%, rgba(201, 169, 97, 0.3) 70%, transparent 100%) !important;
+            background: radial-gradient(circle, rgba(201, 169, 97, 0.9), rgba(201, 169, 97, 0.3) 70%, transparent) !important;
             border: 3px solid var(--gold) !important;
             border-radius: 50% !important;
             cursor: pointer !important;
-            transition: all 0.3s ease !important;
+            transition: all 0.3s !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             font-size: 28px !important;
-            animation: hotspotPulse 2s ease-in-out infinite !important;
+            animation: hotspotPulse 2s infinite !important;
             box-shadow: 0 0 30px rgba(201, 169, 97, 0.6) !important;
         }
 
@@ -525,20 +434,8 @@
 
         .pnlm-hotspot:hover {
             transform: scale(1.3) !important;
-            background: radial-gradient(circle, rgba(201, 169, 97, 1) 0%, rgba(201, 169, 97, 0.5) 70%, transparent 100%) !important;
+            background: radial-gradient(circle, rgba(201, 169, 97, 1), rgba(201, 169, 97, 0.5) 70%, transparent) !important;
             box-shadow: 0 0 60px rgba(201, 169, 97, 1) !important;
-        }
-
-        .hotspot-nav {
-            color: #fff !important;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-        }
-
-        .hotspot-info {
-            background: var(--glass) !important;
-            backdrop-filter: blur(20px) !important;
-            border: 2px solid var(--gold) !important;
-            color: #fff !important;
         }
 
         /* ==================== INFO PANEL ==================== */
@@ -553,11 +450,10 @@
             border-radius: 20px;
             padding: 30px;
             overflow-y: auto;
-            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.3);
             z-index: 1000;
-            animation: slideInRight 1s ease 0.5s both;
-            transform: translateX(0);
-            transition: transform 0.3s ease;
+            animation: slideInRight 1s 0.5s both;
+            transition: transform 0.3s;
         }
 
         .info-panel.collapsed {
@@ -566,7 +462,6 @@
 
         @keyframes slideInRight {
             from { transform: translateX(500px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
 
         .info-toggle {
@@ -582,10 +477,10 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: var(--shadow), 0 0 0 1px var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(201, 169, 97, 0.3);
             z-index: 1001;
-            transition: all 0.3s ease;
-            animation: fadeIn 1s ease 0.5s both;
+            transition: all 0.3s;
+            animation: fadeIn 1s 0.5s both;
         }
 
         .info-toggle:hover {
@@ -593,16 +488,8 @@
             transform: scale(1.1);
         }
 
-        .info-header {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
         .info-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            font-weight: 800;
+            font: 800 28px 'Playfair Display', serif;
             margin-bottom: 10px;
             color: var(--gold);
         }
@@ -610,6 +497,9 @@
         .info-subtitle {
             font-size: 12px;
             color: rgba(255,255,255,0.6);
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(201, 169, 97, 0.3);
         }
 
         .info-stats {
@@ -620,18 +510,16 @@
         }
 
         .info-stat {
-            background: linear-gradient(135deg, rgba(201, 169, 97, 0.1) 0%, rgba(244, 228, 193, 0.05) 100%);
+            background: linear-gradient(135deg, rgba(201, 169, 97, 0.1), rgba(244, 228, 193, 0.05));
             padding: 15px;
             border-radius: 12px;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(201, 169, 97, 0.3);
             text-align: center;
         }
 
         .info-stat-value {
-            font-size: 24px;
-            font-weight: 800;
+            font: 800 24px 'Playfair Display', serif;
             color: var(--gold);
-            font-family: 'Playfair Display', serif;
         }
 
         .info-stat-label {
@@ -652,7 +540,6 @@
             font-size: 13px;
             color: rgba(255,255,255,0.8);
             display: flex;
-            align-items: flex-start;
             gap: 10px;
         }
 
@@ -660,16 +547,12 @@
             content: "✓";
             color: var(--gold);
             font-weight: bold;
-            flex-shrink: 0;
         }
 
-        /* ==================== SCENE TRANSITION ==================== */
+        /* ==================== TRANSITION ==================== */
         .scene-transition {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: #000;
             z-index: 9999;
             display: flex;
@@ -677,16 +560,12 @@
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.4s;
         }
 
         .scene-transition.active {
             opacity: 1;
             pointer-events: all;
-        }
-
-        .transition-content {
-            text-align: center;
         }
 
         .transition-spinner {
@@ -696,7 +575,7 @@
             border-top-color: var(--gold);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
 
         @keyframes spin {
@@ -704,38 +583,11 @@
         }
 
         .transition-text {
-            font-size: 16px;
+            font: 600 16px 'Inter', sans-serif;
             color: var(--gold);
-            font-weight: 600;
-        }
-
-        /* Scrollbar */
-        .info-panel::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .info-panel::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 3px;
-        }
-
-        .info-panel::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-radius: 3px;
         }
 
         /* ==================== RESPONSIVE ==================== */
-        @media (max-width: 1024px) {
-            .info-panel {
-                width: 300px;
-            }
-            
-            .minimap-container {
-                width: 240px;
-                left: 120px;
-            }
-        }
-
         @media (max-width: 768px) {
             .header {
                 padding: 15px 20px;
@@ -746,7 +598,7 @@
                 display: none;
             }
 
-            .minimap-container {
+            .minimap {
                 bottom: 140px;
                 left: 20px;
                 width: 200px;
@@ -759,15 +611,8 @@
                 height: 60px;
             }
 
-            .compass-needle {
-                width: 45px;
-                height: 45px;
-            }
-
             .room-gallery {
                 bottom: 20px;
-                padding: 12px 15px;
-                gap: 8px;
                 max-width: calc(100% - 40px);
                 overflow-x: auto;
             }
@@ -789,14 +634,6 @@
                 top: 90px;
                 right: 20px;
             }
-
-            .loading-title {
-                font-size: 36px;
-            }
-
-            .loading-bar {
-                width: 280px;
-            }
         }
     </style>
 </head>
@@ -806,24 +643,18 @@
         <div class="loading-logo">PE</div>
         <div class="loading-title">THE MANHATTAN</div>
         <div class="loading-subtitle">Professional VR Experience</div>
-        <div class="loading-bar">
-            <div class="loading-progress" id="loadingProgress"></div>
-        </div>
-        <div class="loading-status" id="loadingStatus">Initializing virtual tour...</div>
-        <button class="enter-btn" id="enterBtn" onclick="enterTour()">
-            Enter Virtual Tour →
-        </button>
+        <button class="enter-btn" onclick="enterTour()">Enter Virtual Tour →</button>
     </div>
 
     <!-- Scene Transition -->
     <div class="scene-transition" id="sceneTransition">
-        <div class="transition-content">
+        <div style="text-align: center;">
             <div class="transition-spinner"></div>
             <div class="transition-text" id="transitionText">Loading room...</div>
         </div>
     </div>
 
-    <!-- 360° Panorama Viewer -->
+    <!-- 360° Panorama -->
     <div id="panorama"></div>
 
     <!-- Header -->
@@ -832,19 +663,18 @@
             <div class="brand-logo">PE</div>
             <div class="brand-text">
                 <div class="brand-name">PRESTIGE ESTATES</div>
-                <div class="brand-tagline">Luxury Properties</div>
             </div>
         </div>
         <div class="property-header">
             <div class="property-name">The Manhattan Penthouse</div>
             <div class="property-location">432 Park Avenue, 85th Floor</div>
         </div>
-        <div class="header-actions">
+        <div style="display: flex; gap: 10px;">
             <button class="btn btn-secondary" onclick="toggleFullscreen()">
-                <span>⛶</span> <span class="btn-text">Fullscreen</span>
+                <span>⛶</span> Fullscreen
             </button>
             <button class="btn btn-primary" onclick="shareProperty()">
-                <span>📤</span> <span class="btn-text">Share</span>
+                <span>📤</span> Share
             </button>
         </div>
     </div>
@@ -860,11 +690,11 @@
     </div>
 
     <!-- Minimap -->
-    <div class="minimap-container">
+    <div class="minimap">
         <div class="minimap-title">
             <span>🗺️</span> Floor Plan
         </div>
-        <div class="minimap-canvas" id="minimapCanvas">
+        <div class="minimap-canvas">
             <img src="https://nyc3.digitaloceanspaces.com/bhindi-drive/files/8861229d-bcce-4983-baed-30a95854423d/2026-02-26T06-24-00-519Z-66c3a7f2-nano-banana-pro_1772087040241.jpg" alt="Floor Plan">
             <div class="minimap-marker" id="minimapMarker">
                 <div class="minimap-direction" id="minimapDirection"></div>
@@ -873,9 +703,7 @@
     </div>
 
     <!-- Room Gallery -->
-    <div class="room-gallery" id="roomGallery">
-        <!-- Populated by JavaScript -->
-    </div>
+    <div class="room-gallery" id="roomGallery"></div>
 
     <!-- Info Panel Toggle -->
     <div class="info-toggle" id="infoToggle" onclick="toggleInfoPanel()">
@@ -884,33 +712,12 @@
 
     <!-- Info Panel -->
     <div class="info-panel" id="infoPanel">
-        <div class="info-header">
-            <div class="info-title" id="roomTitle">Living Room</div>
-            <div class="info-subtitle" id="roomSubtitle">Main entertaining space</div>
-        </div>
-
-        <div class="info-stats" id="roomStats">
-            <!-- Populated by JavaScript -->
-        </div>
-
-        <div class="info-section">
-            <h3 style="font-size: 14px; color: var(--gold); margin-bottom: 15px; font-weight: 700;">Features</h3>
-            <ul class="info-features" id="roomFeatures">
-                <!-- Populated by JavaScript -->
-            </ul>
-        </div>
+        <div class="info-title" id="roomTitle">Living Room</div>
+        <div class="info-subtitle" id="roomSubtitle">Main entertaining space</div>
+        <div class="info-stats" id="roomStats"></div>
+        <h3 style="font-size: 14px; color: var(--gold); margin-bottom: 15px; font-weight: 700;">Features</h3>
+        <ul class="info-features" id="roomFeatures"></ul>
     </div>
-
-    <!-- Load Toolbar -->
-    <script>
-        fetch('toolbar.html')
-            .then(response => response.text())
-            .then(html => {
-                const div = document.createElement('div');
-                div.innerHTML = html;
-                document.body.appendChild(div);
-            });
-    </script>
 
     <script>
         // ==================== CONFIGURATION ====================
@@ -938,8 +745,7 @@
                 ],
                 hotspots: [
                     { pitch: -5, yaw: 90, type: 'scene', target: 'kitchen', icon: '→', tooltip: 'Kitchen' },
-                    { pitch: -5, yaw: -90, type: 'scene', target: 'bedroom', icon: '→', tooltip: 'Master Suite' },
-                    { pitch: -10, yaw: 180, type: 'info', text: 'Central Park View', icon: 'ℹ️' }
+                    { pitch: -5, yaw: -90, type: 'scene', target: 'bedroom', icon: '→', tooltip: 'Master Suite' }
                 ]
             },
             kitchen: {
@@ -958,15 +764,14 @@
                 features: [
                     'Sub-Zero refrigeration and wine storage',
                     'Miele professional-grade appliances',
-                    'Calacatta marble countertops and backsplash',
-                    'Custom Italian cabinetry with soft-close',
-                    'Large center island with seating for 6',
-                    'Pot filler and filtered water system'
+                    'Calacatta marble countertops',
+                    'Custom Italian cabinetry',
+                    'Large center island with seating',
+                    'Pot filler and filtered water'
                 ],
                 hotspots: [
                     { pitch: -5, yaw: -90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' },
-                    { pitch: -5, yaw: 90, type: 'scene', target: 'terrace', icon: '→', tooltip: 'Terrace' },
-                    { pitch: 0, yaw: 0, type: 'info', text: 'Professional Appliances', icon: 'ℹ️' }
+                    { pitch: -5, yaw: 90, type: 'scene', target: 'terrace', icon: '→', tooltip: 'Terrace' }
                 ]
             },
             bedroom: {
@@ -984,16 +789,15 @@
                 ],
                 features: [
                     'King-sized bedroom with sitting area',
-                    'Two walk-in closets with custom organization',
-                    'En-suite spa bathroom with dual vanities',
+                    'Two walk-in closets',
+                    'En-suite spa bathroom',
                     'Private terrace access',
                     'Automated blackout shades',
                     'Integrated sound system'
                 ],
                 hotspots: [
                     { pitch: -5, yaw: 90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' },
-                    { pitch: -5, yaw: -90, type: 'scene', target: 'bathroom', icon: '→', tooltip: 'Spa Bath' },
-                    { pitch: -8, yaw: 0, type: 'info', text: 'Custom Walk-in Closets', icon: 'ℹ️' }
+                    { pitch: -5, yaw: -90, type: 'scene', target: 'bathroom', icon: '→', tooltip: 'Spa Bath' }
                 ]
             },
             bathroom: {
@@ -1010,16 +814,15 @@
                     { label: 'Heated', value: 'Floors' }
                 ],
                 features: [
-                    'Freestanding soaking tub with city views',
-                    'Oversized rain shower with body jets',
-                    'Dual vanities with marble countertops',
-                    'Radiant heated marble floors',
-                    'Towel warmers and steam shower',
-                    'Smart mirror with integrated lighting'
+                    'Freestanding soaking tub',
+                    'Oversized rain shower',
+                    'Dual vanities with marble',
+                    'Radiant heated floors',
+                    'Towel warmers',
+                    'Smart mirror with lighting'
                 ],
                 hotspots: [
-                    { pitch: -5, yaw: 180, type: 'scene', target: 'bedroom', icon: '→', tooltip: 'Master Suite' },
-                    { pitch: 0, yaw: 90, type: 'info', text: 'Soaking Tub', icon: 'ℹ️' }
+                    { pitch: -5, yaw: 180, type: 'scene', target: 'bedroom', icon: '→', tooltip: 'Master Suite' }
                 ]
             },
             terrace: {
@@ -1036,17 +839,16 @@
                     { label: 'Views', value: '360°' }
                 ],
                 features: [
-                    'Wraparound terrace with panoramic views',
-                    'Outdoor kitchen with grill and refrigeration',
-                    'Multiple seating and dining areas',
-                    'Integrated irrigation system',
-                    'Weather-resistant power outlets',
+                    'Wraparound terrace with views',
+                    'Outdoor kitchen with grill',
+                    'Multiple seating areas',
+                    'Integrated irrigation',
+                    'Weather-resistant outlets',
                     'Ambient lighting and heating'
                 ],
                 hotspots: [
                     { pitch: -5, yaw: -90, type: 'scene', target: 'kitchen', icon: '→', tooltip: 'Kitchen' },
-                    { pitch: -5, yaw: 90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' },
-                    { pitch: -15, yaw: 0, type: 'info', text: 'Skyline Views', icon: 'ℹ️' }
+                    { pitch: -5, yaw: 90, type: 'scene', target: 'living', icon: '→', tooltip: 'Living Room' }
                 ]
             }
         };
@@ -1054,45 +856,15 @@
         // ==================== STATE ====================
         let viewer = null;
         let currentScene = 'living';
-        let tourStarted = false;
         let infoPanelCollapsed = false;
-        let advancedFeatures = null;
 
         // ==================== INITIALIZATION ====================
-        
-        // Loading progress simulation
-        let progress = 0;
-        const loadingInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(loadingInterval);
-                document.getElementById('loadingStatus').textContent = 'Ready to explore...';
-            }
-            document.getElementById('loadingProgress').style.width = progress + '%';
-        }, 120);
-
-        // Enter tour
-        window.enterTour = function() {
-            if (!tourStarted) {
-                tourStarted = true;
-                document.getElementById('loading').classList.add('hidden');
-                initViewer();
-                initRoomGallery();
-                initAdvancedFeatures();
-            }
-        };
-
-        // Initialize advanced features
-        function initAdvancedFeatures() {
-            if (window.VRTourAdvanced) {
-                advancedFeatures = new VRTourAdvanced(viewer);
-                advancedFeatures.trackRoomVisit(currentScene);
-                window.advancedFeatures = advancedFeatures;
-            }
+        function enterTour() {
+            document.getElementById('loading').classList.add('hidden');
+            initViewer();
+            initRoomGallery();
         }
 
-        // Initialize panorama viewer
         function initViewer() {
             const scene = SCENES[currentScene];
             
@@ -1109,11 +881,9 @@
                 yaw: 0,
                 minHfov: 50,
                 maxHfov: 120,
-                friction: 0.15,
                 hotSpots: createHotspots(scene.hotspots)
             });
 
-            // Update compass on view change
             viewer.on('mouseup', updateCompass);
             viewer.on('touchend', updateCompass);
             
@@ -1121,121 +891,60 @@
             updateMinimap(currentScene);
         }
 
-        // Create hotspots
         function createHotspots(hotspots) {
-            return hotspots.map(spot => {
-                const config = {
-                    pitch: spot.pitch,
-                    yaw: spot.yaw,
-                    cssClass: spot.type === 'scene' ? 'hotspot-nav' : 'hotspot-info',
-                    createTooltipFunc: (hotSpotDiv) => {
-                        hotSpotDiv.innerHTML = `<span class="hotspot-${spot.type}">${spot.icon}</span>`;
-                        if (spot.tooltip) {
-                            hotSpotDiv.title = spot.tooltip;
-                        }
-                    }
-                };
-
-                if (spot.type === 'scene') {
-                    config.clickHandlerFunc = () => {
-                        loadScene(spot.target);
-                        if (advancedFeatures) {
-                            advancedFeatures.trackHotspotClick('navigation', spot.target);
-                        }
-                    };
-                } else if (spot.type === 'info') {
-                    config.clickHandlerFunc = () => {
-                        showInfo(spot.text);
-                        if (advancedFeatures) {
-                            advancedFeatures.trackHotspotClick('info', spot.text);
-                        }
-                    };
-                }
-
-                return config;
-            });
+            return hotspots.map(spot => ({
+                pitch: spot.pitch,
+                yaw: spot.yaw,
+                cssClass: 'hotspot-nav',
+                createTooltipFunc: (div) => {
+                    div.innerHTML = `<span>${spot.icon}</span>`;
+                    div.title = spot.tooltip;
+                },
+                clickHandlerFunc: () => loadScene(spot.target)
+            }));
         }
 
-        // Load scene with transition
-        window.loadScene = function(sceneName) {
+        function loadScene(sceneName) {
             if (!viewer || sceneName === currentScene) return;
 
             const scene = SCENES[sceneName];
             const transition = document.getElementById('sceneTransition');
-            const transitionText = document.getElementById('transitionText');
-
-            // Show transition
-            transitionText.textContent = `Loading ${scene.name}...`;
+            
+            document.getElementById('transitionText').textContent = `Loading ${scene.name}...`;
             transition.classList.add('active');
 
-            // Track analytics
-            if (advancedFeatures) {
-                advancedFeatures.trackRoomVisit(sceneName);
-            }
-
-            // Update scene after delay
             setTimeout(() => {
                 currentScene = sceneName;
-                
-                // Update panorama
-                viewer.loadScene(scene.panorama, scene.pitch || 0, scene.yaw || 0, scene.hfov || 100);
-                
-                // Update hotspots
+                viewer.loadScene(scene.panorama, 0, 0, 100);
                 viewer.removeAllHotSpots();
                 scene.hotspots.forEach(spot => {
-                    const config = {
+                    viewer.addHotSpot({
                         pitch: spot.pitch,
                         yaw: spot.yaw,
-                        cssClass: spot.type === 'scene' ? 'hotspot-nav' : 'hotspot-info',
-                        createTooltipFunc: (hotSpotDiv) => {
-                            hotSpotDiv.innerHTML = `<span class="hotspot-${spot.type}">${spot.icon}</span>`;
-                            if (spot.tooltip) {
-                                hotSpotDiv.title = spot.tooltip;
-                            }
-                        }
-                    };
-
-                    if (spot.type === 'scene') {
-                        config.clickHandlerFunc = () => {
-                            loadScene(spot.target);
-                            if (advancedFeatures) {
-                                advancedFeatures.trackHotspotClick('navigation', spot.target);
-                            }
-                        };
-                    } else if (spot.type === 'info') {
-                        config.clickHandlerFunc = () => {
-                            showInfo(spot.text);
-                            if (advancedFeatures) {
-                                advancedFeatures.trackHotspotClick('info', spot.text);
-                            }
-                        };
-                    }
-
-                    viewer.addHotSpot(config);
+                        cssClass: 'hotspot-nav',
+                        createTooltipFunc: (div) => {
+                            div.innerHTML = `<span>${spot.icon}</span>`;
+                            div.title = spot.tooltip;
+                        },
+                        clickHandlerFunc: () => loadScene(spot.target)
+                    });
                 });
 
-                // Update UI
                 updateRoomInfo(sceneName);
                 updateMinimap(sceneName);
                 updateRoomGallery(sceneName);
 
-                // Hide transition
-                setTimeout(() => {
-                    transition.classList.remove('active');
-                }, 300);
+                setTimeout(() => transition.classList.remove('active'), 300);
             }, 400);
-        };
+        }
 
-        // Initialize room gallery
         function initRoomGallery() {
             const gallery = document.getElementById('roomGallery');
-            gallery.innerHTML = '';
-
-            Object.keys(SCENES).forEach(sceneKey => {
-                const scene = SCENES[sceneKey];
+            Object.keys(SCENES).forEach(key => {
+                const scene = SCENES[key];
                 const thumb = document.createElement('div');
-                thumb.className = `room-thumb ${sceneKey === currentScene ? 'active' : ''}`;
-                thumb.onclick = () => loadScene(sceneKey);
+                thumb.className = `room-thumb ${key === currentScene ? 'active' : ''}`;
+                thumb.onclick = () => loadScene(key);
                 thumb.innerHTML = `
                     <img src="${scene.thumbnail}" alt="${scene.name}">
                     <div class="room-thumb-icon">${scene.icon}</div>
@@ -1245,111 +954,75 @@
             });
         }
 
-        // Update room gallery active state
         function updateRoomGallery(sceneName) {
-            document.querySelectorAll('.room-thumb').forEach((thumb, index) => {
-                const sceneKey = Object.keys(SCENES)[index];
-                thumb.classList.toggle('active', sceneKey === sceneName);
+            document.querySelectorAll('.room-thumb').forEach((thumb, i) => {
+                const key = Object.keys(SCENES)[i];
+                thumb.classList.toggle('active', key === sceneName);
             });
         }
 
-        // Update room info panel
         function updateRoomInfo(sceneName) {
             const scene = SCENES[sceneName];
-            
             document.getElementById('roomTitle').textContent = scene.name;
             document.getElementById('roomSubtitle').textContent = scene.subtitle;
-
-            // Update stats
-            const statsContainer = document.getElementById('roomStats');
-            statsContainer.innerHTML = scene.stats.map(stat => `
+            document.getElementById('roomStats').innerHTML = scene.stats.map(s => `
                 <div class="info-stat">
-                    <div class="info-stat-value">${stat.value}</div>
-                    <div class="info-stat-label">${stat.label}</div>
+                    <div class="info-stat-value">${s.value}</div>
+                    <div class="info-stat-label">${s.label}</div>
                 </div>
             `).join('');
-
-            // Update features
-            const featuresContainer = document.getElementById('roomFeatures');
-            featuresContainer.innerHTML = scene.features.map(feature => `
-                <li>${feature}</li>
-            `).join('');
+            document.getElementById('roomFeatures').innerHTML = scene.features.map(f => `<li>${f}</li>`).join('');
         }
 
-        // Update minimap
         function updateMinimap(sceneName) {
             const scene = SCENES[sceneName];
             const marker = document.getElementById('minimapMarker');
-            
             marker.style.left = scene.minimapPosition.x + '%';
             marker.style.top = scene.minimapPosition.y + '%';
         }
 
-        // Update compass
         function updateCompass() {
             if (!viewer) return;
             const yaw = viewer.getYaw();
-            const needle = document.getElementById('compassNeedle');
-            needle.style.transform = `rotate(${yaw}deg)`;
-            
-            // Update minimap direction
-            const direction = document.getElementById('minimapDirection');
-            direction.style.transform = `translate(-50%, -50%) rotate(${yaw}deg)`;
+            document.getElementById('compassNeedle').style.transform = `rotate(${yaw}deg)`;
+            document.getElementById('minimapDirection').style.transform = `translate(-50%, -50%) rotate(${yaw}deg)`;
         }
 
-        // Show info
-        function showInfo(text) {
-            alert(`ℹ️ ${text}\n\nThis is an interactive information hotspot. In a production version, this would show a beautiful modal with detailed information, images, and specifications.`);
-        }
-
-        // Toggle info panel
-        window.toggleInfoPanel = function() {
+        function toggleInfoPanel() {
             infoPanelCollapsed = !infoPanelCollapsed;
             document.getElementById('infoPanel').classList.toggle('collapsed', infoPanelCollapsed);
             document.getElementById('infoToggle').innerHTML = infoPanelCollapsed 
                 ? '<span style="font-size: 24px;">ℹ️</span>' 
                 : '<span style="font-size: 24px;">✕</span>';
-        };
+        }
 
-        // Fullscreen
-        window.toggleFullscreen = function() {
+        function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
             } else {
                 document.exitFullscreen();
             }
-        };
+        }
 
-        // Share
-        window.shareProperty = function() {
+        function shareProperty() {
             const url = `${window.location.href}?room=${currentScene}`;
             if (navigator.share) {
                 navigator.share({
                     title: `${SCENES[currentScene].name} - The Manhattan Penthouse`,
-                    text: 'Explore this stunning luxury penthouse with 360° virtual tour!',
+                    text: 'Explore this stunning luxury penthouse!',
                     url: url
                 });
             } else {
                 navigator.clipboard.writeText(url);
-                alert(`🔗 Link Copied!\n\nDirect link to ${SCENES[currentScene].name}:\n${url}`);
+                alert(`Link copied: ${url}`);
             }
-        };
+        }
 
-        // Check for room parameter in URL
+        // Check URL parameter
         window.addEventListener('load', () => {
             const params = new URLSearchParams(window.location.search);
             const room = params.get('room');
-            if (room && SCENES[room]) {
-                currentScene = room;
-            }
-        });
-
-        // Track page unload
-        window.addEventListener('beforeunload', () => {
-            if (advancedFeatures) {
-                const summary = advancedFeatures.getAnalyticsSummary();
-                console.log('📊 Final Tour Analytics:', summary);
-            }
+            if (room && SCENES[room]) currentScene = room;
         });
     </script>
 </body>
